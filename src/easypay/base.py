@@ -37,7 +37,7 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-BASE_URL = "https://ldj.frontdoorhd.com/"
+BASE_URL = "https://www.easypay.pt/_s/"
 """ The default base url to be used for a production
 based environment, should be used carefully """
 
