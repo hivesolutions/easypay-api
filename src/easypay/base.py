@@ -37,9 +37,12 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import xml.dom.minidom
+
 import appier
 
 import mb
+import errors
 
 BASE_URL = "https://www.easypay.pt/_s/"
 """ The default base url to be used for a production
@@ -61,7 +64,12 @@ class Api(mb.MBApi):
         self.base_url = BASE_URL if self.production else BASE_URL_TEST
 
     def request(self, method, *args, **kwargs):
-        return method(*args, **kwargs)
+        result = method(*args, **kwargs)
+        result = self._map(result)
+        status = result.get("ep_status", "err1")
+        message = result.get("ep_message", "no message defined")
+        if not status == "ok0": raise errors.ApiError(message)
+        return result
 
     def build_kwargs(self, kwargs, auth = True, token = False):
         if self.cin: kwargs["ep_cin"] = self.cin
@@ -84,3 +92,18 @@ class Api(mb.MBApi):
             data = data,
             data_j = data_j
         )
+
+    def _map(self, buffer):
+        result = dict()
+        document = xml.dom.minidom.parseString(buffer)
+        base = document.getElementsByTagName("getautoMB")[0]
+        for node in base.childNodes:
+            name = node.nodeName
+            value = self._text(node)
+            if value == None: continue
+            result[name] = value
+        return result
+
+    def _text(self, node):
+        if not node.childNodes: return None
+        return node.childNodes[0].nodeValue
