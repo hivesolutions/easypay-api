@@ -39,6 +39,27 @@ __license__ = "GNU General Public License (GPL), Version 3"
 
 import base
 
+import appier
+
+class MBApp(appier.App):
+
+    def __init__(self):
+        appier.App.__init__(self, name = "mb")
+        self.api = base.get_api()
+
+    @appier.route("/generate", "GET")
+    def generate(self):
+        amount = self.field("amount", 10)
+        return self.api.generate_mb(amount)
+
+    @appier.route("/notification", "GET")
+    def notification(self):
+        cin = self.field("ep_cin")
+        username = self.field("ep_user")
+        doc = self.field("ep_doc")
+        #@todo: tenho de retornar xml aki
+        return "<xml>"
+
 if __name__ == "__main__":
-    api = base.get_api()
-    print api.generate_mb(30)
+    app = MBApp()
+    app.serve()
