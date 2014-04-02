@@ -36,3 +36,22 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
+
+BASE_URL = "https://ldj.frontdoorhd.com/"
+""" The default base url to be used for a production
+based environment, should be used carefully """
+
+BASE_URL_TEST = "http://test.easypay.pt/_s/"
+""" The base url for the sandbox endpoint, this is used
+for testing purposes only and the password is sent using
+a non encrypted model (no protection provided) """
+
+class Api(object):
+
+    def __init__(self, *args, **kwargs):
+        self.production = kwargs.get("production", False)
+        self.username = kwargs.get("username", None)
+        self.password = kwargs.get("password", None)
+        self.cin = kwargs.get("cin", None)
+        self.entity = kwargs.get("entity", None)
+        self.base_url = BASE_URL if self.production else BASE_URL_TEST
