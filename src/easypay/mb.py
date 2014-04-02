@@ -19,6 +19,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Hive Easypay API. If not, see <http://www.gnu.org/licenses/>.
 
+__author__ = "João Magalhães <joamag@hive.pt>"
+""" The author(s) of the module """
+
 __version__ = "1.0.0"
 """ The version of the module """
 
@@ -34,8 +37,20 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import base
-import mb
+class MBApi(object):
 
-from base import *
-from mb import *
+    def generate_mb(self, amount, country = "PT", language = "PT"):
+        # @todo must keep track of this stuff
+        import uuid
+        key = str(uuid.uuid4())
+
+        url = self.base_url + "api_easypay_01BG.php"
+        return self.get(
+            url,
+            ep_ref_type = "auto",
+            ep_entity = self.entity,
+            t_key = key,
+            t_value = amount,
+            ep_country = country,
+            ep_language = language,
+        )

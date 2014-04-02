@@ -37,6 +37,10 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import appier
+
+import mb
+
 BASE_URL = "https://www.easypay.pt/_s/"
 """ The default base url to be used for a production
 based environment, should be used carefully """
@@ -46,7 +50,7 @@ BASE_URL_TEST = "http://test.easypay.pt/_s/"
 for testing purposes only and the password is sent using
 a non encrypted model (no protection provided) """
 
-class Api(object):
+class Api(mb.MBApi):
 
     def __init__(self, *args, **kwargs):
         self.production = kwargs.get("production", False)
@@ -55,3 +59,28 @@ class Api(object):
         self.cin = kwargs.get("cin", None)
         self.entity = kwargs.get("entity", None)
         self.base_url = BASE_URL if self.production else BASE_URL_TEST
+
+    def request(self, method, *args, **kwargs):
+        return method(*args, **kwargs)
+
+    def build_kwargs(self, kwargs, auth = True, token = False):
+        if self.cin: kwargs["ep_cin"] = self.cin
+        if self.username: kwargs["ep_user"] = self.username
+
+    def get(self, _url, auth = True, token = False, **kwargs):
+        self.build_kwargs(kwargs, auth = auth, token = token)
+        return self.request(
+            appier.get,
+            _url,
+            params = kwargs
+        )
+
+    def post(self, _url, auth = True, token = False, data = None, data_j = None, **kwargs):
+        self.build_kwargs(kwargs, auth = auth, token = token)
+        return self.request(
+            appier.post,
+            _url,
+            params = kwargs,
+            data = data,
+            data_j = data_j
+        )
