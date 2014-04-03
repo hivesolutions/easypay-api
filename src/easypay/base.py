@@ -127,6 +127,9 @@ class Api(mb.MBApi):
             key = key
         )
 
+    def get_doc(self, doc):
+        return self.docs[doc]
+
     def next(self):
         self.lock.acquire()
         try: self.counter += 1; next = self.counter
@@ -146,7 +149,7 @@ class Api(mb.MBApi):
     def loads(self, data):
         result = dict()
         document = xml.dom.minidom.parseString(data)
-        base = document.getElementsByTagName("getautoMB")[0]
+        base = document.childNodes[0]
         for node in base.childNodes:
             name = node.nodeName
             value = self._text(node)
@@ -178,6 +181,9 @@ def ShelveApi(Api):
         pass
 
     def new_doc(self, doc, key):
+        pass
+
+    def get_doc(self, doc):
         pass
 
     def next(self):

@@ -54,15 +54,18 @@ class MBApi(object):
         return result
 
     def details_mb(self, doc):
-        info = self.docs[doc]
-        print info
+        info = self.get_doc(doc)
+        key = info["key"]
+        url = self.base_url + "api_easypay_03AG.php"
+        return self.get(
+            url,
+            ep_key = key,
+            ep_doc = doc
+        )
 
     def notify_mb(self, cin, username, doc):
         key = self.next()
         self.validate(cin = cin, username = username)
-        print doc
-        print key
-        print "-------"
         self.new_doc(doc, key)
         result = dict(
             ep_status = "ok",
@@ -73,27 +76,3 @@ class MBApi(object):
             ep_key = key
         )
         return self.dumps(result)
-
-
-#        <?xml version="1.0" encoding="ISO-8859-1"?>
-#<getautoMB_detail>
-#<ep_status>ok0</ep_status>
-#<ep_message>id e cin ok;ip ok;doc EASYTEST92008091256378290408 and key 1
-#ok;</ep_message>
-#<ep_cin>8889</ep_cin>
-#<ep_user>EASYTEST9</ep_user>
-#<ep_key>1</ep_key>
-#<t_key>{ORDER_ID}</t_key>
-#<ep_doc>EASYTEST92008091256378290408</ep_doc>
-#<ep_payment_type>MB</ep_payment_type>
-#<ep_entity>10611</ep_entity>
-#<ep_reference>888900174</ep_reference>
-#<ep_value>10.00</ep_value>
-#<ep_value_fixed>0.35</ep_value_fixed>
-#<ep_value_var>0.18</ep_value_var>
-#<ep_value_tax>0.11</ep_value_tax>
-#<ep_value_transf>9.36</ep_value_transf>
-#<ep_date_transf>2008-01-29</ep_date_transf>
-#<ep_date_read>2008-04-11 20:19:42</ep_date_read>
-#<ep_status_read>verified</ep_status_read>
-#</getautoMB_detail>
