@@ -38,6 +38,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import types
+import threading
 
 import xml.dom.minidom
 import xml.etree.ElementTree
@@ -65,6 +66,8 @@ class Api(mb.MBApi):
         self.cin = kwargs.get("cin", None)
         self.entity = kwargs.get("entity", None)
         self.base_url = BASE_URL if self.production else BASE_URL_TEST
+        self.counter = 0
+        self.lock = threading.RLock()
 
     def request(self, method, *args, **kwargs):
         result = method(*args, **kwargs)
@@ -95,6 +98,12 @@ class Api(mb.MBApi):
             data = data,
             data_j = data_j
         )
+
+    def next(self):
+        self.lock.acquire()
+        try: self.counter += 1; next = self.counter
+        finally: self.lock.release()
+        return next
 
     def validate(self, cin = None, username = None):
         if cin and not cin == self.cin:
