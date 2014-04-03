@@ -37,7 +37,10 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import types
+
 import xml.dom.minidom
+import xml.etree.ElementTree
 
 import appier
 
@@ -65,7 +68,7 @@ class Api(mb.MBApi):
 
     def request(self, method, *args, **kwargs):
         result = method(*args, **kwargs)
-        result = self._map(result)
+        result = self.loads(result)
         status = result.get("ep_status", "err1")
         message = result.get("ep_message", "no message defined")
         if not status == "ok0": raise errors.ApiError(message)
@@ -93,15 +96,30 @@ class Api(mb.MBApi):
             data_j = data_j
         )
 
-    def _map(self, buffer):
+    def validate(self, cin = None, username = None):
+        if cin and not cin == self.cin:
+            raise errors.SecurityError("invalid cin")
+        if username and not username == self.username:
+            raise errors.SecurityError("invalid username")
+
+    def loads(self, data):
         result = dict()
-        document = xml.dom.minidom.parseString(buffer)
+        document = xml.dom.minidom.parseString(data)
         base = document.getElementsByTagName("getautoMB")[0]
         for node in base.childNodes:
             name = node.nodeName
             value = self._text(node)
             if value == None: continue
             result[name] = value
+        return result
+
+    def dumps(self, map, root = "getautoMB_detail"):
+        root = xml.etree.ElementTree.Element(root)
+        for name, value in map.iteritems():
+            value = value if type(value) in types.StringTypes else str(value)
+            child = xml.etree.ElementTree.SubElement(root, name)
+            child.text = value
+        result = xml.etree.ElementTree.tostring(root)
         return result
 
     def _text(self, node):
