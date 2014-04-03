@@ -70,15 +70,6 @@ class MBApi(object):
 
 
 #        <?xml version="1.0" encoding="ISO-8859-1"?>
-#        <getautoMB_key>
-#        <ep_status>ok0</ep_status>
-#        <ep_message>doc gerado</ep_message>
-#        <ep_cin>8889</ep_cin>
-#        <ep_user>EASYTEST9</ep_user>
-#        <ep_doc> EASYTEST92008091256378290408</ep_doc>
-#        <ep_key>1</ep_key>
-
-#        <?xml version="1.0" encoding="ISO-8859-1"?>
 #<getautoMB_detail>
 #<ep_status>ok0</ep_status>
 #<ep_message>id e cin ok;ip ok;doc EASYTEST92008091256378290408 and key 1

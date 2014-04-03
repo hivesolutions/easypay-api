@@ -122,13 +122,18 @@ class Api(mb.MBApi):
             result[name] = value
         return result
 
-    def dumps(self, map, root = "getautoMB_detail"):
+    def dumps(self, map, root = "getautoMB_detail", encoding = "utf-8"):
         root = xml.etree.ElementTree.Element(root)
         for name, value in map.iteritems():
             value = value if type(value) in types.StringTypes else str(value)
             child = xml.etree.ElementTree.SubElement(root, name)
             child.text = value
-        result = xml.etree.ElementTree.tostring(root)
+        result = xml.etree.ElementTree.tostring(
+            root,
+            encoding = encoding,
+            method = "xml"
+        )
+        result = "<?xml version=\"1.0\" encoding=\"%s\"?>" % encoding + result
         return result
 
     def _text(self, node):
