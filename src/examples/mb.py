@@ -57,11 +57,9 @@ class MBApp(appier.App):
         cin = self.field("ep_cin")
         username = self.field("ep_user")
         doc = self.field("ep_doc")
-        print "notification"
-        print self.request.args
-        #api.notify() -> deve devolver o xml correspondente
-        #@todo: tenho de retornar xml aki
-        return "<xml>"
+        result = self.api.notify_mb(cin, username, doc)
+        self.content_type("application/xml")
+        return result
 
 if __name__ == "__main__":
     app = MBApp()
