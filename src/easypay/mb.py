@@ -40,24 +40,30 @@ __license__ = "GNU General Public License (GPL), Version 3"
 class MBApi(object):
 
     def generate_mb(self, amount, country = "PT", language = "PT"):
-        # @todo must keep track of this stuff
-        import uuid
-        key = str(uuid.uuid4())
-
         url = self.base_url + "api_easypay_01BG.php"
-        return self.get(
+        result = self.get(
             url,
             ep_ref_type = "auto",
             ep_entity = self.entity,
-            t_key = key,
+            t_key = self.generate(),
             t_value = amount,
             ep_country = country,
             ep_language = language,
         )
+        self.new_reference(result)
+        return result
+
+    def details_mb(self, doc):
+        info = self.docs[doc]
+        print info
 
     def notify_mb(self, cin, username, doc):
         key = self.next()
         self.validate(cin = cin, username = username)
+        print doc
+        print key
+        print "-------"
+        self.new_doc(doc, key)
         result = dict(
             ep_status = "ok",
             ep_message = "doc gerado",

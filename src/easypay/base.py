@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2012 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import uuid
 import types
 import threading
 
@@ -67,6 +68,8 @@ class Api(mb.MBApi):
         self.entity = kwargs.get("entity", None)
         self.base_url = BASE_URL if self.production else BASE_URL_TEST
         self.counter = 0
+        self.references = list()
+        self.docs = dict()
         self.lock = threading.RLock()
 
     def request(self, method, *args, **kwargs):
@@ -99,11 +102,40 @@ class Api(mb.MBApi):
             data_j = data_j
         )
 
+    def new_reference(self, data):
+        cin = data["ep_cin"]
+        username = data["ep_user"]
+        entity = data["ep_entity"]
+        reference = data["ep_reference"]
+        value = data["ep_value"]
+        identifier = data["t_key"]
+        self.references.append(dict(
+            cin = cin,
+            username = username,
+            entity = entity,
+            reference = reference,
+            value = value,
+            identifier = identifier,
+            status = "pending"
+        ))
+
+    def new_doc(self, doc, key):
+        self.docs[doc] = dict(
+            cin = self.cin,
+            username = self.username,
+            doc = doc,
+            key = key
+        )
+
     def next(self):
         self.lock.acquire()
         try: self.counter += 1; next = self.counter
         finally: self.lock.release()
         return next
+
+    def generate(self):
+        identifier = str(uuid.uuid4())
+        return identifier
 
     def validate(self, cin = None, username = None):
         if cin and not cin == self.cin:
@@ -139,3 +171,17 @@ class Api(mb.MBApi):
     def _text(self, node):
         if not node.childNodes: return None
         return node.childNodes[0].nodeValue
+
+def ShelveApi(Api):
+
+    def new_reference(self, data):
+        pass
+
+    def new_doc(self, doc, key):
+        pass
+
+    def next(self):
+        pass
+
+def MongoApi(Api):
+    pass

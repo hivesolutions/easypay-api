@@ -52,6 +52,11 @@ class MBApp(appier.App):
         amount = self.field("amount", 10)
         return self.api.generate_mb(amount)
 
+    @appier.route("/details", "GET")
+    def details(self):
+        doc = self.field("doc")
+        return self.api.details_mb(doc)
+
     @appier.route("/notification", "GET")
     def notification(self):
         cin = self.field("ep_cin")
