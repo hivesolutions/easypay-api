@@ -38,6 +38,7 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import uuid
+import shelve
 import threading
 
 import xml.dom.minidom
@@ -174,10 +175,16 @@ class Api(mb.MBApi):
         if not node.childNodes: return None
         return node.childNodes[0].nodeValue
 
-def ShelveApi(Api):
+class ShelveApi(Api):
+
+    def __init__(self, path = "easypay.shelve", *args, **kwargs):
+        Api.__init__(self, *args, **kwargs)
+        self.shelve = shelve.open(path, writeback = True)
 
     def new_reference(self, data):
-        pass
+        t_key = data["t_key"]
+        data[t_key] = data
+        self.shelve.sync()
 
     def new_doc(self, doc, key):
         pass
@@ -188,5 +195,5 @@ def ShelveApi(Api):
     def next(self):
         pass
 
-def MongoApi(Api):
+class MongoApi(Api):
     pass
