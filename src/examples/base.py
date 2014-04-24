@@ -41,8 +41,8 @@ import os
 
 import easypay
 
-def get_api(api_c = easypay.ShelveApi):
-    return api_c(
+def get_api(api_class = easypay.ShelveApi):
+    return api_class(
         username = os.environ.get("EASYPAY_USERNAME"),
         password = os.environ.get("EASYPAY_PASSWORD"),
         cin = os.environ.get("EASYPAY_CIN"),
