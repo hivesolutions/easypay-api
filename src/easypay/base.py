@@ -38,7 +38,6 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 import uuid
-import types
 import threading
 
 import xml.dom.minidom
@@ -46,8 +45,8 @@ import xml.etree.ElementTree
 
 import appier
 
-import mb
-import errors
+from easypay import mb
+from easypay import errors
 
 BASE_URL = "https://www.easypay.pt/_s/"
 """ The default base url to be used for a production
@@ -160,7 +159,7 @@ class Api(mb.MBApi):
     def dumps(self, map, root = "getautoMB_detail", encoding = "utf-8"):
         root = xml.etree.ElementTree.Element(root)
         for name, value in map.iteritems():
-            value = value if type(value) in types.StringTypes else str(value)
+            value = value if type(value) in appier.STRINGS else str(value)
             child = xml.etree.ElementTree.SubElement(root, name)
             child.text = value
         result = xml.etree.ElementTree.tostring(
