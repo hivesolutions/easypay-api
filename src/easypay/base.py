@@ -84,19 +84,19 @@ class Api(mb.MBApi):
         if self.cin: kwargs["ep_cin"] = self.cin
         if self.username: kwargs["ep_user"] = self.username
 
-    def get(self, _url, auth = True, token = False, **kwargs):
+    def get(self, url, auth = True, token = False, **kwargs):
         self.build_kwargs(kwargs, auth = auth, token = token)
         return self.request(
             appier.get,
-            _url,
+            url,
             params = kwargs
         )
 
-    def post(self, _url, auth = True, token = False, data = None, data_j = None, **kwargs):
+    def post(self, url, auth = True, token = False, data = None, data_j = None, **kwargs):
         self.build_kwargs(kwargs, auth = auth, token = token)
         return self.request(
             appier.post,
-            _url,
+            url,
             params = kwargs,
             data = data,
             data_j = data_j
