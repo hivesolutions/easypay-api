@@ -183,7 +183,7 @@ class ShelveApi(Api):
 
     def new_reference(self, data):
         t_key = data["t_key"]
-        data[t_key] = data
+        self.shelve[t_key] = data
         self.shelve.sync()
 
     def new_doc(self, doc, key):
