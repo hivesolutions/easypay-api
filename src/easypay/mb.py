@@ -38,6 +38,20 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 class MBApi(object):
+    """
+    Class that represents the api for the easypay multibanco
+    and that contains the entry points for its interaction.
+
+    The current implementation involves three main steps:
+    first the generation of the (mb) reference from the
+    client to the server, then the notification from the
+    server about the payment and then the retrieval of
+    the payment details from the client.
+
+    Please note that the retrieval of the payment details
+    from the client may fail and so a continuous loop of
+    retries must be done to ensure no errors.
+    """
 
     def generate_mb(self, amount, country = "PT", language = "PT"):
         url = self.base_url + "api_easypay_01BG.php"
