@@ -57,8 +57,9 @@ class MBApp(appier.App):
         self.api.stop_scheduler()
 
     def on_paid(self, reference, details):
-        print(reference)
-        print(details)
+        identifier = reference["identifier"]
+        value = reference["value"]
+        self.logger.info("Payment notification '%s' for value %s" % (identifier, value))
 
     @appier.route("/generate", "GET")
     def generate(self):
