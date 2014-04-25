@@ -64,7 +64,7 @@ class MBApi(object):
             ep_country = country,
             ep_language = language,
         )
-        self.new_reference(result)
+        self.gen_reference(result)
         return result
 
     def details_mb(self, doc):
@@ -80,7 +80,7 @@ class MBApi(object):
     def notify_mb(self, cin, username, doc):
         key = self.next()
         self.validate(cin = cin, username = username)
-        self.new_doc(doc, key)
+        self.gen_doc(doc, key)
         result = dict(
             ep_status = "ok",
             ep_message = "doc gerado",
@@ -90,3 +90,12 @@ class MBApi(object):
             ep_key = key
         )
         return self.dumps(result)
+
+    def mark_mb(self, details):
+        t_key = details["t_key"]
+        doc = details["ep_doc"]
+        reference = self.get_reference(t_key)
+        self.trigger("paid", reference)
+        self.trigger("marked", reference)
+        self.del_reference(t_key)
+        self.del_doc(doc)

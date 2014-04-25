@@ -59,7 +59,6 @@ BASE_URL_TEST = "http://test.easypay.pt/_s/"
 for testing purposes only and the password is sent using
 a non encrypted model (no protection provided) """
 
-
 class Scheduler(threading.Thread):
     """
     Scheduler thread that is used to poll the remote easypay
@@ -72,8 +71,12 @@ class Scheduler(threading.Thread):
         self.api = api
         self.daemon = True
 
+    def stop(self):
+        self.running = False
+
     def run(self):
-        while self.executing:
+        self.running  = True
+        while self.running:
             self.tick()
             time.sleep(5)
 
@@ -84,9 +87,16 @@ class Scheduler(threading.Thread):
         retrieve the detailed information on them.
         """
 
-        self.api.get
+        docs = self.api.list_docs()
+        for doc in docs:
+            _doc = doc["doc"]
+            details = self.api.details_mb(_doc)
+            self.api.mark_mb(details)
 
-class Api(mb.MBApi):
+class Api(
+    appier.Observable,
+    mb.MBApi
+):
     """
     Top level entry point for the easypay api services,
     should provide the abstract implementations for the
@@ -97,6 +107,7 @@ class Api(mb.MBApi):
     """
 
     def __init__(self, *args, **kwargs):
+        appier.Observable.__init__(self, *args, **kwargs)
         self.production = kwargs.get("production", False)
         self.username = kwargs.get("username", None)
         self.password = kwargs.get("password", None)
@@ -107,6 +118,13 @@ class Api(mb.MBApi):
         self.references = list()
         self.docs = dict()
         self.lock = threading.RLock()
+        self.scheduler = Scheduler(self)
+
+    def start_scheduler(self):
+        self.scheduler.start()
+
+    def stop_scheduler(self):
+        self.scheduler.stop()
 
     def request(self, method, *args, **kwargs):
         result = method(*args, **kwargs)
@@ -138,14 +156,14 @@ class Api(mb.MBApi):
             data_j = data_j
         )
 
-    def new_reference(self, data):
+    def gen_reference(self, data):
         cin = data["ep_cin"]
         username = data["ep_user"]
         entity = data["ep_entity"]
         reference = data["ep_reference"]
         value = data["ep_value"]
         identifier = data["t_key"]
-        self.references.append(dict(
+        reference = dict(
             cin = cin,
             username = username,
             entity = entity,
@@ -153,25 +171,45 @@ class Api(mb.MBApi):
             value = value,
             identifier = identifier,
             status = "pending"
-        ))
+        )
+        self.new_reference(reference)
 
-    def list_references(self):
-        return self.references
-
-    def new_doc(self, doc, key):
-        self.docs[doc] = dict(
+    def gen_doc(self, identifier, key):
+        doc = dict(
             cin = self.cin,
             username = self.username,
-            doc = doc,
+            identifier = identifier,
             key = key
         )
+        self.new_doc(doc)
+
+    def new_reference(self, reference):
+        identifier = reference["identifier"]
+        self.references[identifier] = reference
+
+    def del_reference(self, identifier):
+        del self.references[identifier]
+
+    def list_references(self):
+        references = self.references.values()
+        return appier.eager(references)
+
+    def get_reference(self, identifier):
+        return self.references[identifier]
+
+    def new_doc(self, doc):
+        identifier = doc["identifier"]
+        self.docs[identifier] = doc
+
+    def del_doc(self, identifier):
+        del self.docs[identifier]
 
     def list_docs(self):
         docs = self.docs.values()
         return appier.eager(docs)
 
-    def get_doc(self, doc):
-        return self.docs[doc]
+    def get_doc(self, identifier):
+        return self.docs[identifier]
 
     def next(self):
         self.lock.acquire()
@@ -235,12 +273,22 @@ class ShelveApi(Api):
             writeback = True
         )
 
-    def new_reference(self, data):
-        t_key = data["t_key"]
+    def new_reference(self, reference):
+        identifier = reference["identifier"]
         self.lock.acquire()
         try:
             references = self.shelve.get("references", {})
-            references[t_key] = data
+            references[identifier] = reference
+            self.shelve["references"] = references
+            self.shelve.sync()
+        finally:
+            self.lock.release()
+
+    def del_reference(self, identifier):
+        self.lock.acquire()
+        try:
+            references = self.shelve.get("references", {})
+            del references[identifier]
             self.shelve["references"] = references
             self.shelve.sync()
         finally:
@@ -251,16 +299,26 @@ class ShelveApi(Api):
         references = references.values()
         return appier.eager(references)
 
-    def new_doc(self, doc, key):
+    def get_reference(self, identifier):
+        references = self.shelve.get("references", {})
+        return references[identifier]        
+
+    def new_doc(self, doc):
+        identifier = doc["identifier"]
         self.lock.acquire()
         try:
             docs = self.shelve.get("docs", {})
-            docs[doc] = dict(
-                cin = self.cin,
-                username = self.username,
-                doc = doc,
-                key = key
-            )
+            docs[identifier] = docs
+            self.shelve["docs"] = docs
+            self.shelve.sync()
+        finally:
+            self.lock.release()
+
+    def del_doc(self, identifier):
+        self.lock.acquire()
+        try:
+            docs = self.shelve.get("docs", {})
+            del docs[identifier]
             self.shelve["docs"] = docs
             self.shelve.sync()
         finally:
@@ -271,9 +329,9 @@ class ShelveApi(Api):
         docs = docs.values()
         return appier.eager(docs)
 
-    def get_doc(self, doc):
+    def get_doc(self, identifier):
         docs = self.shelve.get("docs", {})
-        return docs[doc]
+        return docs[identifier]
 
     def next(self):
         self.lock.acquire()
