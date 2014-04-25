@@ -50,6 +50,11 @@ import appier
 from easypay import mb
 from easypay import errors
 
+LOOP_TIMEOUT = 60.0
+""" The timeout to be used between tick intervals for
+the scheduler to process the various pending documents
+and requests for detailed information """
+
 BASE_URL = "https://www.easypay.pt/_s/"
 """ The default base url to be used for a production
 based environment, should be used carefully """
@@ -78,7 +83,7 @@ class Scheduler(threading.Thread):
         self.running  = True
         while self.running:
             self.tick()
-            time.sleep(5)
+            time.sleep(LOOP_TIMEOUT)
 
     def tick(self):
         """
