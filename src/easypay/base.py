@@ -94,7 +94,7 @@ class Scheduler(threading.Thread):
             self.api.mark_mb(details)
 
 class Api(
-    appier.Observable,
+    appier.Api,
     mb.MBApi
 ):
     """
@@ -107,7 +107,7 @@ class Api(
     """
 
     def __init__(self, *args, **kwargs):
-        appier.Observable.__init__(self, *args, **kwargs)
+        appier.Api.__init__(self, *args, **kwargs)
         self.production = kwargs.get("production", False)
         self.username = kwargs.get("username", None)
         self.password = kwargs.get("password", None)
@@ -195,7 +195,7 @@ class Api(
         return appier.eager(references)
 
     def get_reference(self, identifier):
-        return self.references[identifier]
+        return self.references.get(identifier, None)
 
     def new_doc(self, doc):
         identifier = doc["identifier"]
@@ -209,7 +209,7 @@ class Api(
         return appier.eager(docs)
 
     def get_doc(self, identifier):
-        return self.docs[identifier]
+        return self.docs.get(identifier, None)
 
     def next(self):
         self.lock.acquire()
@@ -295,13 +295,23 @@ class ShelveApi(Api):
             self.lock.release()
 
     def list_references(self):
-        references = self.shelve.get("references", {})
-        references = references.values()
-        return appier.eager(references)
+        self.lock.acquire()
+        try:
+            references = self.shelve.get("references", {})
+            references = references.values()
+            references = appier.eager(references)
+        finally:
+            self.lock.release()
+        return references
 
     def get_reference(self, identifier):
-        references = self.shelve.get("references", {})
-        return references[identifier]
+        self.lock.acquire()
+        try:
+            references = self.shelve.get("references", {})
+            reference = references.get(identifier, None)
+        finally:
+            self.lock.release()
+        return  reference
 
     def new_doc(self, doc):
         identifier = doc["identifier"]
@@ -325,13 +335,23 @@ class ShelveApi(Api):
             self.lock.release()
 
     def list_docs(self):
-        docs = self.shelve.get("docs", {})
-        docs = docs.values()
-        return appier.eager(docs)
+        self.lock.acquire()
+        try:
+            docs = self.shelve.get("docs", {})
+            docs = docs.values()
+            docs = appier.eager(docs)
+        finally:
+            self.lock.release()
+        return docs
 
     def get_doc(self, identifier):
-        docs = self.shelve.get("docs", {})
-        return docs[identifier]
+        self.lock.acquire()
+        try:
+            docs = self.shelve.get("docs", {})
+            doc =  docs.get(identifier, None)
+        finally:
+            self.lock.release()
+        return doc
 
     def next(self):
         self.lock.acquire()
