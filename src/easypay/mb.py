@@ -79,7 +79,9 @@ class MBApi(object):
 
     def notify_mb(self, cin, username, doc):
         key = self.next()
+        self.logger.debug("Notification received (doc := %s, key := %s)" % (doc, key))
         self.validate(cin = cin, username = username)
+        self.logger.debug("Validated notification, storing document ...")
         self.gen_doc(doc, key)
         result = dict(
             ep_status = "ok",
@@ -92,10 +94,15 @@ class MBApi(object):
         return self.dumps(result)
 
     def mark_mb(self, details):
-        key = details["t_key"]
         doc = details["ep_doc"]
+        key = details["t_key"]
+        self.logger.debug("Marking multibanco (doc := %s, key := %s)" % (doc, key))
         reference = self.get_reference(key)
+        if not reference:
+            self.logger.warning("No reference found for document (duplicated payment)")
+            self.del_doc(doc)
+            return
         self.trigger("paid", reference, details)
         self.trigger("marked", reference, details)
-        self.del_reference(key)
         self.del_doc(doc)
+        self.del_reference(key)
