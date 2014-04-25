@@ -76,14 +76,14 @@ class Scheduler(threading.Thread):
         self.api = api
         self.daemon = True
 
-    def stop(self):
-        self.running = False
-
     def run(self):
         self.running  = True
         while self.running:
             self.tick()
             time.sleep(LOOP_TIMEOUT)
+
+    def stop(self):
+        self.running = False
 
     def tick(self):
         """
