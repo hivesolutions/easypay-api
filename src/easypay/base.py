@@ -369,6 +369,3 @@ class ShelveApi(Api):
         finally:
             self.lock.release()
         return next
-
-class MongoApi(Api):
-    pass
