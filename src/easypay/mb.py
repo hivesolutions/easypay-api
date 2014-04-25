@@ -67,6 +67,18 @@ class MBApi(object):
         reference = self.gen_reference(result)
         return reference
 
+    def cancel_mb(self, key):
+        reference = self.get_reference(key)
+        reference = reference["reference"]
+        url = self.base_url + "api_easypay_00BG.php"
+        self.get(
+            url,
+            ep_entity = self.entity,
+            ep_ref = reference,
+            ep_delete = "yes"
+        )
+        self.del_reference(key)
+
     def details_mb(self, doc):
         info = self.get_doc(doc)
         key = info["key"]

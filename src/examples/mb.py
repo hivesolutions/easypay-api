@@ -66,6 +66,11 @@ class MBApp(appier.App):
         amount = self.field("amount", 10)
         return self.api.generate_mb(amount)
 
+    @appier.route("/cancel", "GET")
+    def cancel(self):
+        key = self.field("key")
+        return self.api.cancel_mb(key)
+
     @appier.route("/details", "GET")
     def details(self):
         doc = self.field("doc")
