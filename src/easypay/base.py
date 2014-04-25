@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import time
 import uuid
 import shelve
 import threading
@@ -57,6 +58,33 @@ BASE_URL_TEST = "http://test.easypay.pt/_s/"
 """ The base url for the sandbox endpoint, this is used
 for testing purposes only and the password is sent using
 a non encrypted model (no protection provided) """
+
+
+class Scheduler(threading.Thread):
+    """
+    Scheduler thread that is used to poll the remote easypay
+    server for the detailed information on the document and
+    then notify the final api client about the new information.
+    """
+
+    def __init__(self, api):
+        threading.Thread.__init__(self)
+        self.api = api
+        self.daemon = True
+
+    def run(self):
+        while self.executing:
+            self.tick()
+            time.sleep(5)
+
+    def tick(self):
+        """
+        Runs one tick operation, meaning that all the pending
+        documents will be retrieved and a try will be made to
+        retrieve the detailed information on them.
+        """
+
+        self.api.get
 
 class Api(mb.MBApi):
     """
@@ -127,6 +155,9 @@ class Api(mb.MBApi):
             status = "pending"
         ))
 
+    def list_references(self):
+        return self.references
+
     def new_doc(self, doc, key):
         self.docs[doc] = dict(
             cin = self.cin,
@@ -134,6 +165,10 @@ class Api(mb.MBApi):
             doc = doc,
             key = key
         )
+
+    def list_docs(self):
+        docs = self.docs.values()
+        return appier.eager(docs)
 
     def get_doc(self, doc):
         return self.docs[doc]
@@ -194,7 +229,11 @@ class ShelveApi(Api):
 
     def __init__(self, path = "easypay.shelve", *args, **kwargs):
         Api.__init__(self, *args, **kwargs)
-        self.shelve = shelve.open(path, writeback = True)
+        self.shelve = shelve.open(
+            path,
+            protocol = 2,
+            writeback = True
+        )
 
     def new_reference(self, data):
         t_key = data["t_key"]
@@ -206,6 +245,11 @@ class ShelveApi(Api):
             self.shelve.sync()
         finally:
             self.lock.release()
+
+    def list_references(self):
+        references = self.shelve.get("references", {})
+        references = references.values()
+        return appier.eager(references)
 
     def new_doc(self, doc, key):
         self.lock.acquire()
@@ -221,6 +265,11 @@ class ShelveApi(Api):
             self.shelve.sync()
         finally:
             self.lock.release()
+
+    def list_docs(self):
+        docs = self.shelve.get("docs", {})
+        docs = docs.values()
+        return appier.eager(docs)
 
     def get_doc(self, doc):
         docs = self.shelve.get("docs", {})

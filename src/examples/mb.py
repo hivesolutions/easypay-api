@@ -66,6 +66,14 @@ class MBApp(appier.App):
         self.content_type("application/xml")
         return result
 
+    @appier.route("/references", "GET")
+    def references(self):
+        return self.api.list_references()
+
+    @appier.route("/docs", "GET")
+    def docs(self):
+        return self.api.list_docs()
+
 if __name__ == "__main__":
     app = MBApp()
     app.serve()
