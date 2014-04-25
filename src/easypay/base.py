@@ -146,20 +146,20 @@ class Api(
         if not status == "ok0": raise errors.ApiError(message)
         return result
 
-    def build_kwargs(self, kwargs, auth = True, token = False):
+    def build_kwargs(self, kwargs):
         if self.cin: kwargs["ep_cin"] = self.cin
         if self.username: kwargs["ep_user"] = self.username
 
-    def get(self, url, auth = True, token = False, **kwargs):
-        self.build_kwargs(kwargs, auth = auth, token = token)
+    def get(self, url, **kwargs):
+        self.build_kwargs(kwargs)
         return self.request(
             appier.get,
             url,
             params = kwargs
         )
 
-    def post(self, url, auth = True, token = False, data = None, data_j = None, **kwargs):
-        self.build_kwargs(kwargs, auth = auth, token = token)
+    def post(self, url, data = None, data_j = None, **kwargs):
+        self.build_kwargs(kwargs)
         return self.request(
             appier.post,
             url,
