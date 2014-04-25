@@ -178,6 +178,7 @@ class Api(
             status = "pending"
         )
         self.new_reference(reference)
+        return reference
 
     def gen_doc(self, identifier, key):
         doc = dict(
@@ -187,6 +188,7 @@ class Api(
             key = key
         )
         self.new_doc(doc)
+        return doc
 
     def new_reference(self, reference):
         identifier = reference["identifier"]
