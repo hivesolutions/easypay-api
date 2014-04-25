@@ -92,10 +92,10 @@ class MBApi(object):
         return self.dumps(result)
 
     def mark_mb(self, details):
-        t_key = details["t_key"]
+        key = details["t_key"]
         doc = details["ep_doc"]
-        reference = self.get_reference(t_key)
-        self.trigger("paid", reference)
-        self.trigger("marked", reference)
-        self.del_reference(t_key)
+        reference = self.get_reference(key)
+        self.trigger("paid", reference, details)
+        self.trigger("marked", reference, details)
+        self.del_reference(key)
         self.del_doc(doc)

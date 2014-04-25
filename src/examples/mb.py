@@ -46,6 +46,7 @@ class MBApp(appier.App):
     def __init__(self):
         appier.App.__init__(self, name = "mb")
         self.api = base.get_api()
+        self.api.bind("paid", self.on_paid)
 
     def start(self):
         appier.App.start(self)
@@ -54,6 +55,10 @@ class MBApp(appier.App):
     def stop(self):
         appier.App.stop(self)
         self.api.stop_scheduler()
+
+    def on_paid(self, reference, details):
+        print(reference)
+        print(details)
 
     @appier.route("/generate", "GET")
     def generate(self):

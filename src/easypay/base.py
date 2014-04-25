@@ -89,8 +89,8 @@ class Scheduler(threading.Thread):
 
         docs = self.api.list_docs()
         for doc in docs:
-            _doc = doc["doc"]
-            details = self.api.details_mb(_doc)
+            identifier = doc["identifier"]
+            details = self.api.details_mb(identifier)
             self.api.mark_mb(details)
 
 class Api(
@@ -301,14 +301,14 @@ class ShelveApi(Api):
 
     def get_reference(self, identifier):
         references = self.shelve.get("references", {})
-        return references[identifier]        
+        return references[identifier]
 
     def new_doc(self, doc):
         identifier = doc["identifier"]
         self.lock.acquire()
         try:
             docs = self.shelve.get("docs", {})
-            docs[identifier] = docs
+            docs[identifier] = doc
             self.shelve["docs"] = docs
             self.shelve.sync()
         finally:
