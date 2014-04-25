@@ -47,6 +47,14 @@ class MBApp(appier.App):
         appier.App.__init__(self, name = "mb")
         self.api = base.get_api()
 
+    def start(self):
+        appier.App.start(self)
+        self.api.start_scheduler()
+
+    def stop(self):
+        appier.App.stop(self)
+        self.api.stop_scheduler()
+
     @appier.route("/generate", "GET")
     def generate(self):
         amount = self.field("amount", 10)
