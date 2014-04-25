@@ -59,6 +59,14 @@ for testing purposes only and the password is sent using
 a non encrypted model (no protection provided) """
 
 class Api(mb.MBApi):
+    """
+    Top level entry point for the easypay api services,
+    should provide the abstract implementations for the
+    services offered by easypay.
+
+    Concrete implementations of this api should provide
+    other storage options that should include persistence.
+    """
 
     def __init__(self, *args, **kwargs):
         self.production = kwargs.get("production", False)
@@ -159,7 +167,7 @@ class Api(mb.MBApi):
 
     def dumps(self, map, root = "getautoMB_detail", encoding = "utf-8"):
         root = xml.etree.ElementTree.Element(root)
-        for name, value in map.iteritems():
+        for name, value in map.items():
             value = value if type(value) in appier.STRINGS else str(value)
             child = xml.etree.ElementTree.SubElement(root, name)
             child.text = value
@@ -168,7 +176,8 @@ class Api(mb.MBApi):
             encoding = encoding,
             method = "xml"
         )
-        result = "<?xml version=\"1.0\" encoding=\"%s\"?>" % encoding + result
+        header = appier.bytes("<?xml version=\"1.0\" encoding=\"%s\"?>" % encoding)
+        result = header + result
         return result
 
     def _text(self, node):
@@ -176,6 +185,12 @@ class Api(mb.MBApi):
         return node.childNodes[0].nodeValue
 
 class ShelveApi(Api):
+    """
+    Shelve api based infra-structure, that provides a storage
+    engine based for secondary storage persistence. This class
+    should be used only as a fallback storage as the performance
+    is considered poor, due to large overhead in persistence.
+    """
 
     def __init__(self, path = "easypay.shelve", *args, **kwargs):
         Api.__init__(self, *args, **kwargs)
@@ -183,17 +198,45 @@ class ShelveApi(Api):
 
     def new_reference(self, data):
         t_key = data["t_key"]
-        self.shelve[t_key] = data
-        self.shelve.sync()
+        self.lock.acquire()
+        try:
+            references = self.shelve.get("references", {})
+            references[t_key] = data
+            self.shelve["references"] = references
+            self.shelve.sync()
+        finally:
+            self.lock.release()
 
     def new_doc(self, doc, key):
-        pass
+        self.lock.acquire()
+        try:
+            docs = self.shelve.get("docs", {})
+            docs[doc] = dict(
+                cin = self.cin,
+                username = self.username,
+                doc = doc,
+                key = key
+            )
+            self.shelve["docs"] = docs
+            self.shelve.sync()
+        finally:
+            self.lock.release()
 
     def get_doc(self, doc):
-        pass
+        docs = self.shelve.get("docs", {})
+        return docs[doc]
 
     def next(self):
-        pass
+        self.lock.acquire()
+        try:
+            counter = self.shelve.get("counter", 0)
+            counter += 1
+            next = counter
+            self.shelve["counter"] = counter
+            self.shelve.sync()
+        finally:
+            self.lock.release()
+        return next
 
 class MongoApi(Api):
     pass
