@@ -64,8 +64,8 @@ class MBApi(object):
             ep_country = country,
             ep_language = language,
         )
-        self.gen_reference(result)
-        return result
+        reference = self.gen_reference(result)
+        return reference
 
     def details_mb(self, doc):
         info = self.get_doc(doc)
