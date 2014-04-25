@@ -41,6 +41,7 @@ import time
 import uuid
 import shelve
 import threading
+import traceback
 
 import xml.dom.minidom
 import xml.etree.ElementTree
@@ -79,7 +80,13 @@ class Scheduler(threading.Thread):
     def run(self):
         self.running  = True
         while self.running:
-            self.tick()
+            try:
+                self.tick()
+            except BaseException as exception:
+                self.api.logger.critical("Unhandled easypay exception raised")
+                self.api.logger.error(exception)
+                lines = traceback.format_exc().splitlines()
+                for line in lines: self.api.logger.warning(line)
             time.sleep(LOOP_TIMEOUT)
 
     def stop(self):
