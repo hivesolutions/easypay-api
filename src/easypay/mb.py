@@ -93,6 +93,10 @@ class MBApi(object):
 
     def notify_mb(self, cin, username, doc):
         self.ensure_set(cin = cin, username = username, doc = doc)
+        if not cin == self.cin:
+            raise appier.SecurityError(message  = "Mismatch in received cin")
+        if not username == self.username:
+            raise appier.SecurityError(message  = "Mismatch in received username")
         key = self.next()
         self.logger.debug("Notification received (doc := %s, key := %s)" % (doc, key))
         self.validate(cin = cin, username = username)

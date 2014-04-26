@@ -168,6 +168,12 @@ class Api(
             data_j = data_j
         )
 
+    def diagnostics(self):
+        return dict(
+            references = self.list_references(),
+            docs = self.list_docs()
+        )
+
     def gen_reference(self, data):
         cin = data["ep_cin"]
         username = data["ep_user"]
