@@ -125,4 +125,6 @@ class MBApi(object):
     def ensure_set(self, **kwargs):
         for key, value in kwargs.items():
             if value: continue
-            appier.OperationalError("Invalid %s received '%s'" % (key, value))
+            raise appier.OperationalError(
+                message  = "Invalid %s received '%s'" % (key, value)
+            )
