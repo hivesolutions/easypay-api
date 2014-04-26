@@ -37,6 +37,8 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import appier
+
 class MBApi(object):
     """
     Class that represents the api for the easypay multibanco
@@ -90,6 +92,7 @@ class MBApi(object):
         )
 
     def notify_mb(self, cin, username, doc):
+        self.ensure_set(cin = cin, username = username, doc = doc)
         key = self.next()
         self.logger.debug("Notification received (doc := %s, key := %s)" % (doc, key))
         self.validate(cin = cin, username = username)
@@ -118,3 +121,8 @@ class MBApi(object):
         self.trigger("marked", reference, details)
         self.del_doc(doc)
         self.del_reference(key)
+
+    def ensure_set(self, **kwargs):
+        for key, value in kwargs.items():
+            if value: continue
+            appier.OperationalError("Invalid %s received '%s'" % (key, value))
