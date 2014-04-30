@@ -115,11 +115,11 @@ class MBApi(object):
     def mark_mb(self, details):
         doc = details["ep_doc"]
         key = details.get("t_key", None)
+        self.logger.debug("Marking multibanco (doc := %s, key := %s)" % (doc, key))
         if not key:
             self.logger.warning("No key found in details (orphan payment)")
             self.del_doc(doc)
             return
-        self.logger.debug("Marking multibanco (doc := %s, key := %s)" % (doc, key))
         reference = self.get_reference(key)
         if not reference:
             self.logger.warning("No reference found for document (duplicated payment)")
