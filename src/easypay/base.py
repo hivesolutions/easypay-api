@@ -103,7 +103,10 @@ class Scheduler(threading.Thread):
         for doc in docs:
             identifier = doc["identifier"]
             details = self.api.details_mb(identifier)
-            self.api.logger.critical(str(details))
+            has_key = "t_key" in details
+            if not has_key: self.api.logger.warning(
+                "Skipping the mark of %s, no t_key" % identifier
+            ); continue
             self.api.mark_mb(details)
 
 class Api(
