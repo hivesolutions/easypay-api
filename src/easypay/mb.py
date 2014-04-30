@@ -84,6 +84,7 @@ class MBApi(object):
     def details_mb(self, doc):
         info = self.get_doc(doc)
         key = info["key"]
+        if not key: raise appier.OperationalError(message  = "Missing key from details")
         url = self.base_url + "api_easypay_03AG.php"
         return self.get(
             url,
