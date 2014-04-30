@@ -103,6 +103,7 @@ class Scheduler(threading.Thread):
         for doc in docs:
             identifier = doc["identifier"]
             details = self.api.details_mb(identifier)
+            print(details)
             self.api.mark_mb(details)
 
 class Api(
