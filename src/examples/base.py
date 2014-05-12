@@ -37,14 +37,14 @@ __copyright__ = "Copyright (c) 2008-2014 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
-import os
+import appier
 
 import easypay
 
 def get_api(api_class = easypay.ShelveApi):
     return api_class(
-        username = os.environ.get("EASYPAY_USERNAME"),
-        password = os.environ.get("EASYPAY_PASSWORD"),
-        cin = os.environ.get("EASYPAY_CIN"),
-        entity = os.environ.get("EASYPAY_ENTITY")
+        username = appier.conf("EASYPAY_USERNAME"),
+        password = appier.conf("EASYPAY_PASSWORD"),
+        cin = appier.conf("EASYPAY_CIN"),
+        entity = appier.conf("EASYPAY_ENTITY")
     )
