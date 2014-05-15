@@ -45,7 +45,7 @@ setuptools.setup(
     description = "Easypay API",
     license = "GNU General Public License (GPL), Version 3",
     keywords = "easypay api",
-    url = "http://easypay.com",
+    url = "http://easypay_api.hive.pt",
     zip_safe = False,
     packages = [
         "easypay"
