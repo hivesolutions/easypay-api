@@ -146,7 +146,7 @@ class Api(
         if not status == "ok0": raise errors.ApiError(message)
         return result
 
-    def build(self, headers, kwargs):
+    def build(self, method, url, headers, kwargs):
         appier.Api.build(self, headers, kwargs)
         if self.cin: kwargs["ep_cin"] = self.cin
         if self.username: kwargs["ep_user"] = self.username
