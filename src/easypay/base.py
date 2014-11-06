@@ -195,7 +195,7 @@ class Api(
 
     def list_references(self):
         references = self.references.values()
-        return appier.eager(references)
+        return appier.legacy.eager(references)
 
     def get_reference(self, identifier):
         return self.references.get(identifier, None)
@@ -209,7 +209,7 @@ class Api(
 
     def list_docs(self):
         docs = self.docs.values()
-        return appier.eager(docs)
+        return appier.legacy.eager(docs)
 
     def get_doc(self, identifier):
         return self.docs.get(identifier, None)
@@ -244,7 +244,7 @@ class Api(
     def dumps(self, map, root = "getautoMB_detail", encoding = "utf-8"):
         root = xml.etree.ElementTree.Element(root)
         for name, value in map.items():
-            value = value if type(value) in appier.STRINGS else str(value)
+            value = value if type(value) in appier.legacy.STRINGS else str(value)
             child = xml.etree.ElementTree.SubElement(root, name)
             child.text = value
         result = xml.etree.ElementTree.tostring(
@@ -252,7 +252,7 @@ class Api(
             encoding = encoding,
             method = "xml"
         )
-        header = appier.bytes("<?xml version=\"1.0\" encoding=\"%s\"?>" % encoding)
+        header = appier.legacy.bytes("<?xml version=\"1.0\" encoding=\"%s\"?>" % encoding)
         result = header + result
         return result
 
@@ -302,7 +302,7 @@ class ShelveApi(Api):
         try:
             references = self.shelve.get("references", {})
             references = references.values()
-            references = appier.eager(references)
+            references = appier.legacy.eager(references)
         finally:
             self.lock.release()
         return references
@@ -342,7 +342,7 @@ class ShelveApi(Api):
         try:
             docs = self.shelve.get("docs", {})
             docs = docs.values()
-            docs = appier.eager(docs)
+            docs = appier.legacy.eager(docs)
         finally:
             self.lock.release()
         return docs
