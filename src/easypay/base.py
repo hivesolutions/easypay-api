@@ -48,8 +48,8 @@ import xml.etree.ElementTree
 
 import appier
 
-from easypay import mb
-from easypay import errors
+from . import mb
+from . import errors
 
 LOOP_TIMEOUT = 60.0
 """ The timeout to be used between tick intervals for
