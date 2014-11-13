@@ -35,7 +35,9 @@ __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
 from . import base
+from . import errors
 from . import mb
 
-from .base import *
-from .mb import *
+from .base import Scheduler, Api, ShelveApi
+from .errors import ApiError, SecurityError
+from .mb import MBApi
