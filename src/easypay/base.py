@@ -78,7 +78,7 @@ class Scheduler(threading.Thread):
         self.daemon = True
 
     def run(self):
-        self.running  = True
+        self.running = True
         while self.running:
             try:
                 self.tick()
@@ -314,7 +314,7 @@ class ShelveApi(Api):
             reference = references.get(identifier, None)
         finally:
             self.lock.release()
-        return  reference
+        return reference
 
     def new_doc(self, doc):
         identifier = doc["identifier"]
@@ -351,7 +351,7 @@ class ShelveApi(Api):
         self.lock.acquire()
         try:
             docs = self.shelve.get("docs", {})
-            doc =  docs.get(identifier, None)
+            doc = docs.get(identifier, None)
         finally:
             self.lock.release()
         return doc
