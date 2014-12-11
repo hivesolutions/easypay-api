@@ -120,11 +120,16 @@ class Api(
 
     def __init__(self, *args, **kwargs):
         appier.Api.__init__(self, *args, **kwargs)
-        self.production = kwargs.get("production", False)
-        self.username = kwargs.get("username", None)
-        self.password = kwargs.get("password", None)
-        self.cin = kwargs.get("cin", None)
-        self.entity = kwargs.get("entity", None)
+        self.production = appier.conf("EASYPAY_PRODUCTION", False, cast = bool)
+        self.username = appier.conf("EASYPAY_USERNAME", None)
+        self.password = appier.conf("EASYPAY_PASSWORD", None)
+        self.cin = appier.conf("EASYPAY_CIN", None)
+        self.entity = appier.conf("EASYPAY_ENTITY", None)
+        self.production = kwargs.get("production", self.production)
+        self.username = kwargs.get("username", self.username)
+        self.password = kwargs.get("password", self.password)
+        self.cin = kwargs.get("cin", self.cin)
+        self.entity = kwargs.get("entity", self.entity)
         self.base_url = BASE_URL if self.production else BASE_URL_TEST
         self.counter = 0
         self.references = list()
