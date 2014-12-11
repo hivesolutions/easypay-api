@@ -134,5 +134,5 @@ class MBApi(object):
         for key, value in kwargs.items():
             if value: continue
             raise appier.OperationalError(
-                message  = "Invalid %s received '%s'" % (key, value)
+                message = "Invalid %s received '%s'" % (key, value)
             )
