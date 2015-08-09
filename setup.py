@@ -45,7 +45,7 @@ setuptools.setup(
     version = "0.1.9",
     author = "Hive Solutions Lda.",
     author_email = "development@hive.pt",
-    description = "Easypay API",
+    description = "Easypay API Client",
     license = "GNU General Public License (GPL), Version 3",
     keywords = "easypay api",
     url = "http://easypay_api.hive.pt",
