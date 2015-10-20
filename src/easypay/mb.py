@@ -70,7 +70,11 @@ class MBApi(object):
         return reference
 
     def cancel_mb(self, key):
+        self.logger.debug("Canceling multibanco (key := %s)" % key)
         reference = self.get_reference(key)
+        if not reference:
+            self.logger.warning("No reference found for key to cancel")
+            return
         reference = reference["reference"]
         url = self.base_url + "api_easypay_00BG.php"
         self.get(
