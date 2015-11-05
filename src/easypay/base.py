@@ -151,7 +151,18 @@ class Api(
         if not status == "ok0": raise errors.ApiError(message)
         return result
 
-    def build(self, method, url, headers, kwargs):
+    def build(
+        self,
+        method,
+        url,
+        data = None,
+        data_j = None,
+        data_m = None,
+        headers = None,
+        params = None,
+        mime = None,
+        kwargs = None
+    ):
         appier.Api.build(self, method, url, headers, kwargs)
         if self.cin: kwargs["ep_cin"] = self.cin
         if self.username: kwargs["ep_user"] = self.username
