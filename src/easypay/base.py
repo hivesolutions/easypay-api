@@ -284,10 +284,12 @@ class ShelveApi(Api):
     is considered poor, due to large overhead in persistence.
     """
 
-    def __init__(self, path = "easypay.shelve", *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         Api.__init__(self, *args, **kwargs)
+        self.path = appier.conf("EASYPAY_PATH", "easypay.shelve")
+        self.path = kwargs.get("path", self.path)
         self.shelve = shelve.open(
-            path,
+            self.path,
             protocol = 2,
             writeback = True
         )
