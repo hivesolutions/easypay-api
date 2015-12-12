@@ -37,6 +37,7 @@ __copyright__ = "Copyright (c) 2008-2015 Hive Solutions Lda."
 __license__ = "GNU General Public License (GPL), Version 3"
 """ The license for the module """
 
+import os
 import time
 import uuid
 import shelve
@@ -288,6 +289,9 @@ class ShelveApi(Api):
         Api.__init__(self, *args, **kwargs)
         self.path = appier.conf("EASYPAY_PATH", "easypay.shelve")
         self.path = kwargs.get("path", self.path)
+        base_path = os.path.dirname(self.path)
+        exists = not base_path or os.path.exists(base_path)
+        if not exists: os.makedirs(base_path)
         self.shelve = shelve.open(
             self.path,
             protocol = 2,
