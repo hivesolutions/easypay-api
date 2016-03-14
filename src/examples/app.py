@@ -41,19 +41,19 @@ import base
 
 import appier
 
-class MBApp(appier.App):
+class MBApp(appier.APIApp):
 
-    def __init__(self):
-        appier.App.__init__(self, name = "mb")
+    def __init__(self, *args, **kwargs):
+        appier.APIApp.__init__(self, name = "mb", *args, **kwargs)
         self.api = base.get_api()
         self.api.bind("paid", self.on_paid)
 
     def start(self):
-        appier.App.start(self)
+        appier.APIApp.start(self)
         self.api.start_scheduler()
 
     def stop(self):
-        appier.App.stop(self)
+        appier.APIApp.stop(self)
         self.api.stop_scheduler()
 
     def on_paid(self, reference, details):
