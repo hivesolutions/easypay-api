@@ -55,13 +55,13 @@ class MBApi(object):
     retries must be done to ensure no errors.
     """
 
-    def generate_mb(self, amount, country = "PT", language = "PT"):
+    def generate_mb(self, amount, key = None, country = "PT", language = "PT"):
         url = self.base_url + "api_easypay_01BG.php"
         result = self.get(
             url,
             ep_ref_type = "auto",
             ep_entity = self.entity,
-            t_key = self.generate(),
+            t_key = key or self.generate(),
             t_value = amount,
             ep_country = country,
             ep_language = language
