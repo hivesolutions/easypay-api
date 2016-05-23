@@ -133,7 +133,7 @@ class Api(
         self.entity = kwargs.get("entity", self.entity)
         self.base_url = BASE_URL if self.production else BASE_URL_TEST
         self.counter = 0
-        self.references = list()
+        self.references = dict()
         self.docs = dict()
         self.lock = threading.RLock()
         self.scheduler = Scheduler(self)
