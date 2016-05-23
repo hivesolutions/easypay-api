@@ -139,9 +139,11 @@ class Api(
         self.scheduler = Scheduler(self)
 
     def start_scheduler(self):
+        if self.scheduler.is_alive(): return
         self.scheduler.start()
 
     def stop_scheduler(self):
+        if not self.scheduler.is_alive(): return
         self.scheduler.stop()
 
     def request(self, method, *args, **kwargs):
