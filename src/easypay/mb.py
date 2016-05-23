@@ -64,7 +64,7 @@ class MBApi(object):
             t_key = self.generate(),
             t_value = amount,
             ep_country = country,
-            ep_language = language,
+            ep_language = language
         )
         reference = self.gen_reference(result)
         return reference
