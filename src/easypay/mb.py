@@ -55,7 +55,15 @@ class MBApi(object):
     retries must be done to ensure no errors.
     """
 
-    def generate_mb(self, amount, key = None, country = "PT", language = "PT"):
+    def generate_mb(
+        self,
+        amount,
+        key = None,
+        country = "PT",
+        language = "PT",
+        warning = None,
+        cancel = None
+    ):
         url = self.base_url + "api_easypay_01BG.php"
         result = self.get(
             url,
@@ -66,8 +74,24 @@ class MBApi(object):
             ep_country = country,
             ep_language = language
         )
-        reference = self.gen_reference(result)
+        reference = self.gen_reference(
+            result,
+            warning = warning,
+            cancel = cancel
+        )
         return reference
+
+    def warn_mb(self, key):
+        self.logger.debug("Warning multibanco (key := %s)" % key)
+        reference = self.get_reference(key)
+        if not reference:
+            self.logger.warning("No reference found for key to warn")
+            return
+        warned = reference.get("warned", False)
+        if warned: return
+        reference["warned"] = True
+        self.set_reference(reference)
+        self.trigger("warned", reference)
 
     def cancel_mb(self, key):
         self.logger.debug("Canceling multibanco (key := %s)" % key)
@@ -75,15 +99,16 @@ class MBApi(object):
         if not reference:
             self.logger.warning("No reference found for key to cancel")
             return
-        reference = reference["reference"]
+        ref = reference["reference"]
         url = self.base_url + "api_easypay_00BG.php"
         self.get(
             url,
             ep_entity = self.entity,
-            ep_ref = reference,
+            ep_ref = ref,
             ep_delete = "yes"
         )
         self.del_reference(key)
+        self.trigger("canceled", reference)
 
     def details_mb(self, doc):
         info = self.get_doc(doc)

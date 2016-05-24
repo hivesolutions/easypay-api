@@ -106,6 +106,16 @@ class Scheduler(threading.Thread):
             details = self.api.details_mb(identifier)
             self.api.mark_mb(details)
 
+        references = self.api.list_references()
+        for reference in references:
+            current = time.time()
+            identifier = reference["identifier"]
+            warning = reference.get("warning", None)
+            cancel = reference.get("cancel", None)
+            warned = reference.get("warned", False)
+            if warning and current > warning and not warned: self.api.warn_mb(identifier)
+            if cancel and current > cancel: self.api.cancel_mb(identifier)
+
 class Api(
     appier.Api,
     mb.MBApi
@@ -176,7 +186,7 @@ class Api(
             docs = self.list_docs()
         )
 
-    def gen_reference(self, data):
+    def gen_reference(self, data, warning = None, cancel = None):
         cin = data["ep_cin"]
         username = data["ep_user"]
         entity = data["ep_entity"]
@@ -190,6 +200,8 @@ class Api(
             reference = reference,
             value = value,
             identifier = identifier,
+            warning = warning,
+            cancel = cancel,
             status = "pending"
         )
         self.new_reference(reference)
@@ -206,6 +218,9 @@ class Api(
         return doc
 
     def new_reference(self, reference):
+        self.set_reference(reference)
+
+    def set_reference(self, reference):
         identifier = reference["identifier"]
         self.references[identifier] = reference
 
@@ -300,7 +315,7 @@ class ShelveApi(Api):
             writeback = True
         )
 
-    def new_reference(self, reference):
+    def set_reference(self, reference):
         identifier = reference["identifier"]
         self.lock.acquire()
         try:
