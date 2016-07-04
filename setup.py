@@ -51,8 +51,10 @@ setuptools.setup(
     url = "http://easypay_api.hive.pt",
     zip_safe = False,
     packages = [
-        "easypay"
+        "easypay",
+        "easypay.test"
     ],
+    test_suite = "easypay.test",
     package_dir = {
         "" : os.path.normpath("src")
     },
