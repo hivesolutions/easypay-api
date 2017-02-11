@@ -107,6 +107,10 @@ class Scheduler(threading.Thread):
             self.api.mark_mb(details)
 
         references = self.api.list_references()
+        references.sort(
+            key = lambda v: v.get("cancel", 0),
+            reverse = True
+        )
         for reference in references:
             current = time.time()
             identifier = reference["identifier"]
