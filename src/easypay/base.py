@@ -108,7 +108,7 @@ class Scheduler(threading.Thread):
 
         references = self.api.list_references()
         references.sort(
-            key = lambda v: v.get("cancel", 0),
+            key = lambda v: v.get("cancel", 0) or 0,
             reverse = True
         )
         for reference in references:
