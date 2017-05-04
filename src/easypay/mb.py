@@ -93,7 +93,7 @@ class MBApi(object):
         self.set_reference(reference)
         self.trigger("warned", reference)
 
-    def cancel_mb(self, key):
+    def cancel_mb(self, key, force = True):
         self.logger.debug("Canceling multibanco (key := %s)" % key)
         reference = self.get_reference(key)
         if not reference:
@@ -101,12 +101,15 @@ class MBApi(object):
             return
         ref = reference["reference"]
         url = self.base_url + "api_easypay_00BG.php"
-        self.get(
-            url,
-            ep_entity = self.entity,
-            ep_ref = ref,
-            ep_delete = "yes"
-        )
+        try:
+            self.get(
+                url,
+                ep_entity = self.entity,
+                ep_ref = ref,
+                ep_delete = "yes"
+            )
+        except:
+            if not force: raise
         self.del_reference(key)
         self.trigger("canceled", reference)
 
