@@ -110,6 +110,7 @@ class MBApi(object):
             )
         except:
             if not force: raise
+            self.logger.warning("Problem while canceling multibanco, ignoring")
         self.del_reference(key)
         self.trigger("canceled", reference)
 
