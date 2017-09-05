@@ -120,9 +120,9 @@ class Scheduler(threading.Thread):
             if warning and current > warning and not warned: self.api.warn_mb(identifier)
             if cancel and current > cancel: self.api.cancel_mb(identifier)
 
-class Api(
-    appier.Api,
-    mb.MBApi
+class API(
+    appier.API,
+    mb.MBAPI
 ):
     """
     Top level entry point for the easypay api services,
@@ -134,7 +134,7 @@ class Api(
     """
 
     def __init__(self, *args, **kwargs):
-        appier.Api.__init__(self, *args, **kwargs)
+        appier.API.__init__(self, *args, **kwargs)
         self.production = appier.conf("EASYPAY_PRODUCTION", False, cast = bool)
         self.username = appier.conf("EASYPAY_USERNAME", None)
         self.password = appier.conf("EASYPAY_PASSWORD", None)
@@ -165,7 +165,7 @@ class Api(
         result = self.loads(result)
         status = result.get("ep_status", "err1")
         message = result.get("ep_message", "no message defined")
-        if not status == "ok0": raise errors.ApiError(message)
+        if not status == "ok0": raise errors.APIError(message)
         return result
 
     def build(
@@ -180,7 +180,7 @@ class Api(
         mime = None,
         kwargs = None
     ):
-        appier.Api.build(self, method, url, headers, kwargs)
+        appier.API.build(self, method, url, headers, kwargs)
         if self.cin: kwargs["ep_cin"] = self.cin
         if self.username: kwargs["ep_user"] = self.username
 
@@ -298,16 +298,16 @@ class Api(
         if not node.childNodes: return None
         return node.childNodes[0].nodeValue
 
-class ShelveApi(Api):
+class ShelveAPI(API):
     """
-    Shelve api based infra-structure, that provides a storage
+    Shelve API based infra-structure, that provides a storage
     engine based for secondary storage persistence. This class
     should be used only as a fallback storage as the performance
     is considered poor, due to large overhead in persistence.
     """
 
     def __init__(self, *args, **kwargs):
-        Api.__init__(self, *args, **kwargs)
+        API.__init__(self, *args, **kwargs)
         self.path = appier.conf("EASYPAY_PATH", "easypay.shelve")
         self.path = kwargs.get("path", self.path)
         base_path = os.path.dirname(self.path)

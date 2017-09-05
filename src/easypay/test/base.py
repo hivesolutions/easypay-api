@@ -44,7 +44,7 @@ import easypay
 class BaseTest(unittest.TestCase):
 
     def test_shelve(self):
-        api = easypay.ShelveApi(
+        api = easypay.ShelveAPI(
             username = "username",
             cin = "1111",
             entity = "11111"

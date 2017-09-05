@@ -37,8 +37,8 @@ __copyright__ = "Copyright (c) 2008-2017 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-class ApiError(RuntimeError):
+class APIError(RuntimeError):
     pass
 
-class SecurityError(ApiError):
+class SecurityError(APIError):
     pass

@@ -41,7 +41,7 @@ import appier
 
 import easypay
 
-def get_api(api_class = easypay.ShelveApi):
+def get_api(api_class = easypay.ShelveAPI):
     return api_class(
         username = appier.conf("EASYPAY_USERNAME"),
         password = appier.conf("EASYPAY_PASSWORD"),

@@ -38,6 +38,6 @@ from . import base
 from . import errors
 from . import mb
 
-from .base import BASE_URL, Scheduler, Api, ShelveApi
-from .errors import ApiError, SecurityError
-from .mb import MBApi
+from .base import BASE_URL, Scheduler, API, ShelveAPI
+from .errors import APIError, SecurityError
+from .mb import MBAPI

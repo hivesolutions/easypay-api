@@ -39,13 +39,13 @@ __license__ = "Apache License, Version 2.0"
 
 import appier
 
-class MBApi(object):
+class MBAPI(object):
     """
     Class that represents the api for the easypay multibanco
     and that contains the entry points for its interaction.
 
     The current implementation involves three main steps:
-    first the generation of the (mb) reference from the
+    first the generation of the (MB) reference from the
     client to the server, then the notification from the
     server about the payment and then the retrieval of
     the payment details from the client.
