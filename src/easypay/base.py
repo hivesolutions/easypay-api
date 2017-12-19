@@ -58,11 +58,11 @@ the scheduler to process the various pending documents
 and requests for detailed information """
 
 BASE_URL = "https://www.easypay.pt/_s/"
-""" The default base url to be used for a production
+""" The default base URL to be used for a production
 based environment, should be used carefully """
 
 BASE_URL_TEST = "http://test.easypay.pt/_s/"
-""" The base url for the sandbox endpoint, this is used
+""" The base URL for the sandbox endpoint, this is used
 for testing purposes only and the password is sent using
 a non encrypted model (no protection provided) """
 
