@@ -152,6 +152,11 @@ class API(
         self.lock = threading.RLock()
         self.scheduler = Scheduler(self)
 
+    @classmethod
+    def cleanup(cls, *args, **kwargs):
+        singleton = cls.singleton(*args, **kwargs)
+        singleton.stop_scheduler()
+
     def start_scheduler(self):
         if self.scheduler.is_alive(): return
         self.scheduler.start()
