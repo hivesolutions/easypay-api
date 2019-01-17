@@ -155,7 +155,11 @@ class API(
     @classmethod
     def cleanup(cls, *args, **kwargs):
         singleton = cls.singleton(*args, **kwargs)
-        singleton.stop_scheduler()
+        singleton.destroy()
+
+    def destroy(self):
+        appier.API.destroy(self)
+        self.stop_scheduler()
 
     def start_scheduler(self):
         if self.scheduler.is_alive(): return
@@ -323,6 +327,10 @@ class ShelveAPI(API):
             protocol = 2,
             writeback = True
         )
+
+    def destroy(self):
+        API.destroy(self)
+        self.shelve.close()
 
     def set_reference(self, reference):
         identifier = reference["identifier"]
