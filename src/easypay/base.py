@@ -330,7 +330,7 @@ class ShelveAPI(API):
 
     def destroy(self):
         API.destroy(self)
-        self.shelve.close()
+        if self.shelve: self.shelve.close()
         self.shelve = None
 
     def set_reference(self, reference):
