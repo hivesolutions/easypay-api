@@ -108,7 +108,7 @@ class MBAPI(object):
                 ep_ref = ref,
                 ep_delete = "yes"
             )
-        except:
+        except Exception:
             if not force: raise
             self.logger.warning("Problem while canceling multibanco, ignoring")
         self.del_reference(key)
