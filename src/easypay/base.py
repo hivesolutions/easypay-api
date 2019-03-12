@@ -83,7 +83,7 @@ class Scheduler(threading.Thread):
         while self.running:
             try:
                 self.tick()
-            except BaseException as exception:
+            except Exception as exception:
                 self.api.logger.critical("Unhandled easypay exception raised")
                 self.api.logger.error(exception)
                 lines = traceback.format_exc().splitlines()
