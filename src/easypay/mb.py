@@ -41,7 +41,7 @@ import appier
 
 class MBAPI(object):
     """
-    Class that represents the api for the easypay multibanco
+    Class that represents the API for the easypay multibanco
     and that contains the entry points for its interaction.
 
     The current implementation involves three main steps:

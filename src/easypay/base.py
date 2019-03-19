@@ -70,7 +70,7 @@ class Scheduler(threading.Thread):
     """
     Scheduler thread that is used to poll the remote easypay
     server for the detailed information on the document and
-    then notify the final api client about the new information.
+    then notify the final API client about the new information.
     """
 
     def __init__(self, api):
@@ -125,11 +125,11 @@ class API(
     mb.MBAPI
 ):
     """
-    Top level entry point for the easypay api services,
+    Top level entry point for the easypay API services,
     should provide the abstract implementations for the
     services offered by easypay.
 
-    Concrete implementations of this api should provide
+    Concrete implementations of this API should provide
     other storage options that should include persistence.
     """
 
