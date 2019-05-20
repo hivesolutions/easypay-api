@@ -102,9 +102,15 @@ class Scheduler(threading.Thread):
 
         docs = self.api.list_docs()
         for doc in docs:
-            identifier = doc["identifier"]
-            details = self.api.details_mb(identifier)
-            self.api.mark_mb(details)
+            try:
+                identifier = doc["identifier"]
+                details = self.api.details_mb(identifier)
+                self.api.mark_mb(details)
+            except Exception as exception:
+                self.api.logger.critical("Problem handling document: '%s'" % doc.get("identifier", "unknown"))
+                self.api.logger.error(exception)
+                lines = traceback.format_exc().splitlines()
+                for line in lines: self.api.logger.warning(line)
 
         references = self.api.list_references()
         references.sort(
@@ -112,13 +118,19 @@ class Scheduler(threading.Thread):
             reverse = True
         )
         for reference in references:
-            current = time.time()
-            identifier = reference["identifier"]
-            warning = reference.get("warning", None)
-            cancel = reference.get("cancel", None)
-            warned = reference.get("warned", False)
-            if warning and current > warning and not warned: self.api.warn_mb(identifier)
-            if cancel and current > cancel: self.api.cancel_mb(identifier)
+            try:
+                current = time.time()
+                identifier = reference["identifier"]
+                warning = reference.get("warning", None)
+                cancel = reference.get("cancel", None)
+                warned = reference.get("warned", False)
+                if warning and current > warning and not warned: self.api.warn_mb(identifier)
+                if cancel and current > cancel: self.api.cancel_mb(identifier)
+            except Exception as exception:
+                self.api.logger.critical("Problem handling reference: '%s'" % reference.get("identifier", "unknown"))
+                self.api.logger.error(exception)
+                lines = traceback.format_exc().splitlines()
+                for line in lines: self.api.logger.warning(line)
 
 class API(
     appier.API,
