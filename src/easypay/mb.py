@@ -41,7 +41,7 @@ import appier
 
 class MBAPI(object):
     """
-    Class that represents the API for the easypay multibanco
+    Class that represents the API for the Easypay Multibanco
     and that contains the entry points for its interaction.
 
     The current implementation involves three main steps:
@@ -82,7 +82,7 @@ class MBAPI(object):
         return reference
 
     def warn_mb(self, key):
-        self.logger.debug("Warning multibanco (key := %s)" % key)
+        self.logger.debug("Warning Multibanco (key := %s)" % key)
         reference = self.get_reference(key)
         if not reference:
             self.logger.warning("No reference found for key to warn")
@@ -94,7 +94,7 @@ class MBAPI(object):
         self.trigger("warned", reference)
 
     def cancel_mb(self, key, force = True):
-        self.logger.debug("Canceling multibanco (key := %s)" % key)
+        self.logger.debug("Canceling Multibanco (key := %s)" % key)
         reference = self.get_reference(key)
         if not reference:
             self.logger.warning("No reference found for key to cancel")
