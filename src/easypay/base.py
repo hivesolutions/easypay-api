@@ -68,7 +68,7 @@ a non encrypted model (no protection provided) """
 
 class Scheduler(threading.Thread):
     """
-    Scheduler thread that is used to poll the remote easypay
+    Scheduler thread that is used to poll the remote Easypay
     server for the detailed information on the document and
     then notify the final API client about the new information.
     """
@@ -84,7 +84,7 @@ class Scheduler(threading.Thread):
             try:
                 self.tick()
             except Exception as exception:
-                self.api.logger.critical("Unhandled easypay exception raised")
+                self.api.logger.critical("Unhandled Easypay exception raised")
                 self.api.logger.error(exception)
                 lines = traceback.format_exc().splitlines()
                 for line in lines: self.api.logger.warning(line)
@@ -137,9 +137,9 @@ class API(
     mb.MBAPI
 ):
     """
-    Top level entry point for the easypay API services,
+    Top level entry point for the Easypay API services,
     should provide the abstract implementations for the
-    services offered by easypay.
+    services offered by Easypay.
 
     Concrete implementations of this API should provide
     other storage options that should include persistence.
