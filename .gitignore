@@ -5,4 +5,4 @@ easypay.shelve*
 
 /dist
 /build
-/src/easypay-api.egg-info
+/src/easypay_api.egg-info
