@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2020 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -41,22 +32,19 @@ import unittest
 
 import easypay
 
+
 class BaseTest(unittest.TestCase):
 
     def test_shelve(self):
-        api = easypay.ShelveAPI(
-            username = "username",
-            cin = "1111",
-            entity = "11111"
-        )
+        api = easypay.ShelveAPI(username="username", cin="1111", entity="11111")
 
         data = dict(
-            ep_cin = "1111",
-            ep_user = "username",
-            ep_entity = "11111",
-            ep_reference = "111111111",
-            ep_value = "10.00",
-            t_key = "key"
+            ep_cin="1111",
+            ep_user="username",
+            ep_entity="11111",
+            ep_reference="111111111",
+            ep_value="10.00",
+            t_key="key",
         )
 
         reference = api.gen_reference(data)

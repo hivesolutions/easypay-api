@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2020 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -66,6 +57,7 @@ BASE_URL_TEST = "http://test.easypay.pt/_s/"
 for testing purposes only and the password is sent using
 a non encrypted model (no protection provided) """
 
+
 class Scheduler(threading.Thread):
     """
     Scheduler thread that is used to poll the remote Easypay
@@ -87,7 +79,8 @@ class Scheduler(threading.Thread):
                 self.api.logger.critical("Unhandled Easypay exception raised")
                 self.api.logger.error(exception)
                 lines = traceback.format_exc().splitlines()
-                for line in lines: self.api.logger.warning(line)
+                for line in lines:
+                    self.api.logger.warning(line)
             time.sleep(LOOP_TIMEOUT)
 
     def stop(self):
@@ -107,16 +100,16 @@ class Scheduler(threading.Thread):
                 details = self.api.details_mb(identifier)
                 self.api.mark_mb(details)
             except Exception as exception:
-                self.api.logger.critical("Problem handling document: '%s'" % doc.get("identifier", "unknown"))
+                self.api.logger.critical(
+                    "Problem handling document: '%s'" % doc.get("identifier", "unknown")
+                )
                 self.api.logger.error(exception)
                 lines = traceback.format_exc().splitlines()
-                for line in lines: self.api.logger.warning(line)
+                for line in lines:
+                    self.api.logger.warning(line)
 
         references = self.api.list_references()
-        references.sort(
-            key = lambda v: v.get("cancel", 0) or 0,
-            reverse = True
-        )
+        references.sort(key=lambda v: v.get("cancel", 0) or 0, reverse=True)
         for reference in references:
             try:
                 current = time.time()
@@ -124,18 +117,22 @@ class Scheduler(threading.Thread):
                 warning = reference.get("warning", None)
                 cancel = reference.get("cancel", None)
                 warned = reference.get("warned", False)
-                if warning and current > warning and not warned: self.api.warn_mb(identifier)
-                if cancel and current > cancel: self.api.cancel_mb(identifier)
+                if warning and current > warning and not warned:
+                    self.api.warn_mb(identifier)
+                if cancel and current > cancel:
+                    self.api.cancel_mb(identifier)
             except Exception as exception:
-                self.api.logger.critical("Problem handling reference: '%s'" % reference.get("identifier", "unknown"))
+                self.api.logger.critical(
+                    "Problem handling reference: '%s'"
+                    % reference.get("identifier", "unknown")
+                )
                 self.api.logger.error(exception)
                 lines = traceback.format_exc().splitlines()
-                for line in lines: self.api.logger.warning(line)
+                for line in lines:
+                    self.api.logger.warning(line)
 
-class API(
-    appier.API,
-    mb.MBAPI
-):
+
+class API(appier.API, mb.MBAPI):
     """
     Top level entry point for the Easypay API services,
     should provide the abstract implementations for the
@@ -147,7 +144,7 @@ class API(
 
     def __init__(self, *args, **kwargs):
         appier.API.__init__(self, *args, **kwargs)
-        self.production = appier.conf("EASYPAY_PRODUCTION", False, cast = bool)
+        self.production = appier.conf("EASYPAY_PRODUCTION", False, cast=bool)
         self.username = appier.conf("EASYPAY_USERNAME", None)
         self.password = appier.conf("EASYPAY_PASSWORD", None)
         self.cin = appier.conf("EASYPAY_CIN", None)
@@ -174,11 +171,13 @@ class API(
         self.stop_scheduler()
 
     def start_scheduler(self):
-        if self.scheduler.is_alive(): return
+        if self.scheduler.is_alive():
+            return
         self.scheduler.start()
 
     def stop_scheduler(self):
-        if not self.scheduler.is_alive(): return
+        if not self.scheduler.is_alive():
+            return
         self.scheduler.stop()
 
     def request(self, method, *args, **kwargs):
@@ -186,32 +185,32 @@ class API(
         result = self.loads(result)
         status = result.get("ep_status", "err1")
         message = result.get("ep_message", "no message defined")
-        if not status == "ok0": raise errors.APIError(message)
+        if not status == "ok0":
+            raise errors.APIError(message)
         return result
 
     def build(
         self,
         method,
         url,
-        data = None,
-        data_j = None,
-        data_m = None,
-        headers = None,
-        params = None,
-        mime = None,
-        kwargs = None
+        data=None,
+        data_j=None,
+        data_m=None,
+        headers=None,
+        params=None,
+        mime=None,
+        kwargs=None,
     ):
         appier.API.build(self, method, url, headers, kwargs)
-        if self.cin: kwargs["ep_cin"] = self.cin
-        if self.username: kwargs["ep_user"] = self.username
+        if self.cin:
+            kwargs["ep_cin"] = self.cin
+        if self.username:
+            kwargs["ep_user"] = self.username
 
     def diagnostics(self):
-        return dict(
-            references = self.list_references(),
-            docs = self.list_docs()
-        )
+        return dict(references=self.list_references(), docs=self.list_docs())
 
-    def gen_reference(self, data, warning = None, cancel = None):
+    def gen_reference(self, data, warning=None, cancel=None):
         cin = data["ep_cin"]
         username = data["ep_user"]
         entity = data["ep_entity"]
@@ -219,26 +218,21 @@ class API(
         value = data["ep_value"]
         identifier = data["t_key"]
         reference = dict(
-            cin = cin,
-            username = username,
-            entity = entity,
-            reference = reference,
-            value = value,
-            identifier = identifier,
-            warning = warning,
-            cancel = cancel,
-            status = "pending"
+            cin=cin,
+            username=username,
+            entity=entity,
+            reference=reference,
+            value=value,
+            identifier=identifier,
+            warning=warning,
+            cancel=cancel,
+            status="pending",
         )
         self.new_reference(reference)
         return reference
 
     def gen_doc(self, identifier, key):
-        doc = dict(
-            cin = self.cin,
-            username = self.username,
-            identifier = identifier,
-            key = key
-        )
+        doc = dict(cin=self.cin, username=self.username, identifier=identifier, key=key)
         self.new_doc(doc)
         return doc
 
@@ -275,15 +269,18 @@ class API(
 
     def next(self):
         self.lock.acquire()
-        try: self.counter += 1; next = self.counter
-        finally: self.lock.release()
+        try:
+            self.counter += 1
+            next = self.counter
+        finally:
+            self.lock.release()
         return next
 
     def generate(self):
         identifier = str(uuid.uuid4())
         return identifier
 
-    def validate(self, cin = None, username = None):
+    def validate(self, cin=None, username=None):
         if cin and not cin == self.cin:
             raise errors.SecurityError("invalid cin")
         if username and not username == self.username:
@@ -296,28 +293,27 @@ class API(
         for node in base.childNodes:
             name = node.nodeName
             value = self._text(node)
-            if value == None: continue
+            if value == None:
+                continue
             result[name] = value
         return result
 
-    def dumps(self, map, root = "getautoMB_detail", encoding = "utf-8"):
+    def dumps(self, map, root="getautoMB_detail", encoding="utf-8"):
         root = xml.etree.ElementTree.Element(root)
         for name, value in map.items():
             value = value if type(value) in appier.legacy.STRINGS else str(value)
             child = xml.etree.ElementTree.SubElement(root, name)
             child.text = value
-        result = xml.etree.ElementTree.tostring(
-            root,
-            encoding = encoding,
-            method = "xml"
-        )
-        header = appier.legacy.bytes("<?xml version=\"1.0\" encoding=\"%s\"?>" % encoding)
+        result = xml.etree.ElementTree.tostring(root, encoding=encoding, method="xml")
+        header = appier.legacy.bytes('<?xml version="1.0" encoding="%s"?>' % encoding)
         result = header + result
         return result
 
     def _text(self, node):
-        if not node.childNodes: return None
+        if not node.childNodes:
+            return None
         return node.childNodes[0].nodeValue
+
 
 class ShelveAPI(API):
     """
@@ -333,16 +329,14 @@ class ShelveAPI(API):
         self.path = kwargs.get("path", self.path)
         base_path = os.path.dirname(self.path)
         exists = not base_path or os.path.exists(base_path)
-        if not exists: os.makedirs(base_path)
-        self.shelve = shelve.open(
-            self.path,
-            protocol = 2,
-            writeback = True
-        )
+        if not exists:
+            os.makedirs(base_path)
+        self.shelve = shelve.open(self.path, protocol=2, writeback=True)
 
     def destroy(self):
         API.destroy(self)
-        if self.shelve: self.shelve.close()
+        if self.shelve:
+            self.shelve.close()
         self.shelve = None
 
     def set_reference(self, reference):

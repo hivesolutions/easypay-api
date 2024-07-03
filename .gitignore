@@ -3,6 +3,8 @@
 session.shelve*
 easypay.shelve*
 
+/.venv
+
 /dist
 /build
 /src/easypay_api.egg-info

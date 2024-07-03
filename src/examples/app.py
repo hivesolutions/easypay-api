@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2020 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -41,10 +32,11 @@ import base
 
 import appier
 
+
 class MBApp(appier.APIApp):
 
     def __init__(self, *args, **kwargs):
-        appier.APIApp.__init__(self, name = "mb", *args, **kwargs)
+        appier.APIApp.__init__(self, name="mb", *args, **kwargs)
         self.api = base.get_api()
         self.api.bind("paid", self.on_paid)
 
@@ -92,6 +84,7 @@ class MBApp(appier.APIApp):
     @appier.route("/docs", "GET")
     def docs(self):
         return self.api.list_docs()
+
 
 if __name__ == "__main__":
     app = MBApp()

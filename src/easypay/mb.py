@@ -22,15 +22,6 @@
 __author__ = "João Magalhães <joamag@hive.pt>"
 """ The author(s) of the module """
 
-__version__ = "1.0.0"
-""" The version of the module """
-
-__revision__ = "$LastChangedRevision$"
-""" The revision number of the module """
-
-__date__ = "$LastChangedDate$"
-""" The last change date of the module """
-
 __copyright__ = "Copyright (c) 2008-2020 Hive Solutions Lda."
 """ The copyright for the module """
 
@@ -38,6 +29,7 @@ __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
 import appier
+
 
 class MBAPI(object):
     """
@@ -56,29 +48,19 @@ class MBAPI(object):
     """
 
     def generate_mb(
-        self,
-        amount,
-        key = None,
-        country = "PT",
-        language = "PT",
-        warning = None,
-        cancel = None
+        self, amount, key=None, country="PT", language="PT", warning=None, cancel=None
     ):
         url = self.base_url + "api_easypay_01BG.php"
         result = self.get(
             url,
-            ep_ref_type = "auto",
-            ep_entity = self.entity,
-            t_key = key or self.generate(),
-            t_value = amount,
-            ep_country = country,
-            ep_language = language
+            ep_ref_type="auto",
+            ep_entity=self.entity,
+            t_key=key or self.generate(),
+            t_value=amount,
+            ep_country=country,
+            ep_language=language,
         )
-        reference = self.gen_reference(
-            result,
-            warning = warning,
-            cancel = cancel
-        )
+        reference = self.gen_reference(result, warning=warning, cancel=cancel)
         return reference
 
     def warn_mb(self, key):
@@ -88,12 +70,13 @@ class MBAPI(object):
             self.logger.warning("No reference found for key to warn")
             return
         warned = reference.get("warned", False)
-        if warned: return
+        if warned:
+            return
         reference["warned"] = True
         self.set_reference(reference)
         self.trigger("warned", reference)
 
-    def cancel_mb(self, key, force = True):
+    def cancel_mb(self, key, force=True):
         self.logger.debug("Canceling Multibanco (key := %s)" % key)
         reference = self.get_reference(key)
         if not reference:
@@ -102,14 +85,10 @@ class MBAPI(object):
         ref = reference["reference"]
         url = self.base_url + "api_easypay_00BG.php"
         try:
-            self.get(
-                url,
-                ep_entity = self.entity,
-                ep_ref = ref,
-                ep_delete = "yes"
-            )
+            self.get(url, ep_entity=self.entity, ep_ref=ref, ep_delete="yes")
         except Exception:
-            if not force: raise
+            if not force:
+                raise
             self.logger.warning("Problem while canceling multibanco, ignoring")
         self.del_reference(key)
         self.trigger("canceled", reference)
@@ -118,30 +97,26 @@ class MBAPI(object):
         info = self.get_doc(doc)
         key = info["key"]
         url = self.base_url + "api_easypay_03AG.php"
-        return self.get(
-            url,
-            ep_key = key,
-            ep_doc = doc
-        )
+        return self.get(url, ep_key=key, ep_doc=doc)
 
     def notify_mb(self, cin, username, doc):
-        self.ensure_set(cin = cin, username = username, doc = doc)
+        self.ensure_set(cin=cin, username=username, doc=doc)
         if not cin == self.cin:
-            raise appier.SecurityError(message = "Mismatch in received cin")
+            raise appier.SecurityError(message="Mismatch in received cin")
         if not username == self.username:
-            raise appier.SecurityError(message = "Mismatch in received username")
+            raise appier.SecurityError(message="Mismatch in received username")
         key = self.next()
         self.logger.debug("Notification received (doc := %s, key := %s)" % (doc, key))
-        self.validate(cin = cin, username = username)
+        self.validate(cin=cin, username=username)
         self.logger.debug("Validated notification, storing document ...")
         self.gen_doc(doc, key)
         result = dict(
-            ep_status = "ok",
-            ep_message = "doc gerado",
-            ep_cin = cin,
-            ep_user = username,
-            ep_doc = doc,
-            ep_key = key
+            ep_status="ok",
+            ep_message="doc gerado",
+            ep_cin=cin,
+            ep_user=username,
+            ep_doc=doc,
+            ep_key=key,
         )
         return self.dumps(result)
 
@@ -165,7 +140,8 @@ class MBAPI(object):
 
     def ensure_set(self, **kwargs):
         for key, value in kwargs.items():
-            if value: continue
+            if value:
+                continue
             raise appier.OperationalError(
-                message = "Invalid %s received '%s'" % (key, value)
+                message="Invalid %s received '%s'" % (key, value)
             )
