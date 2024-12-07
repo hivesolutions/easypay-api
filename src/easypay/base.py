@@ -57,6 +57,14 @@ BASE_URL_TEST = "http://test.easypay.pt/_s/"
 for testing purposes only and the password is sent using
 a non encrypted model (no protection provided) """
 
+BASE_URL_V2 = "https://api.easypay.pt/"
+""" The base URL for API V2 for the production environment, this is the
+URL that should be used for production purposes """
+
+BASE_URL_TEST_V2 = "https://api.test.easypay.pt/"
+""" The base URL for API V2 for the test environment, this is the URL
+that should be used for testing purposes """
+
 
 class Scheduler(threading.Thread):
     """
@@ -432,7 +440,7 @@ class ShelveAPI(API):
         return next
 
 
-class API2(appier.API):
+class APIV2(appier.API):
     """
     Top level entry point for the Easypay API 2.0 services,
     should provide the abstract implementations for the
@@ -447,7 +455,7 @@ class API2(appier.API):
         self.production = kwargs.get("production", self.production)
         self.account_id = kwargs.get("account_id", self.account_id)
         self.key = kwargs.get("key", self.key)
-        self.base_url = BASE_URL if self.production else BASE_URL_TEST
+        self.base_url = BASE_URL_V2 if self.production else BASE_URL_TEST_V2
         self.counter = 0
         self.references = dict()
         self.lock = threading.RLock()

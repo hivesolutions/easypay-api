@@ -3,6 +3,7 @@
 session.shelve*
 easypay.shelve*
 
+/.env
 /.venv
 
 /dist
