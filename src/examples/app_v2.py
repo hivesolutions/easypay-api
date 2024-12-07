@@ -28,22 +28,24 @@ __copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import base
+
 import appier
 
-import easypay
+
+class MBAppV2(appier.APIApp):
+
+    def __init__(self, *args, **kwargs):
+        appier.APIApp.__init__(self, name="mb_v2", *args, **kwargs)
+        self.api = base.get_api_v2()
+
+    @appier.route("/payments", "GET")
+    def payments(self):
+        return self.api.list_single_payments()
 
 
-def get_api(api_class=easypay.ShelveAPI):
-    return api_class(
-        username=appier.conf("EASYPAY_USERNAME"),
-        password=appier.conf("EASYPAY_PASSWORD"),
-        cin=appier.conf("EASYPAY_CIN"),
-        entity=appier.conf("EASYPAY_ENTITY"),
-    )
-
-
-def get_api_v2(api_class=easypay.APIV2):
-    return api_class(
-        client_id=appier.conf("EASYPAY_CLIENT_ID"),
-        key=appier.conf("EASYPAY_KEY"),
-    )
+if __name__ == "__main__":
+    app = MBAppV2()
+    app.serve()
+else:
+    __path__ = []

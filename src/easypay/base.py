@@ -42,6 +42,7 @@ import appier
 
 from . import mb
 from . import errors
+from . import payment
 
 LOOP_TIMEOUT = 60.0
 """ The timeout to be used between tick intervals for
@@ -57,11 +58,11 @@ BASE_URL_TEST = "http://test.easypay.pt/_s/"
 for testing purposes only and the password is sent using
 a non encrypted model (no protection provided) """
 
-BASE_URL_V2 = "https://api.easypay.pt/"
+BASE_URL_V2 = "https://api.easypay.pt/2.0/"
 """ The base URL for API V2 for the production environment, this is the
 URL that should be used for production purposes """
 
-BASE_URL_TEST_V2 = "https://api.test.easypay.pt/"
+BASE_URL_TEST_V2 = "https://api.test.easypay.pt/2.0/"
 """ The base URL for API V2 for the test environment, this is the URL
 that should be used for testing purposes """
 
@@ -440,7 +441,7 @@ class ShelveAPI(API):
         return next
 
 
-class APIV2(appier.API):
+class APIV2(appier.API, payment.PaymentAPI):
     """
     Top level entry point for the Easypay API 2.0 services,
     should provide the abstract implementations for the
@@ -460,3 +461,21 @@ class APIV2(appier.API):
         self.references = dict()
         self.lock = threading.RLock()
         self.scheduler = Scheduler(self)
+
+    def build(
+        self,
+        method,
+        url,
+        data=None,
+        data_j=None,
+        data_m=None,
+        headers=None,
+        params=None,
+        mime=None,
+        kwargs=None,
+    ):
+        appier.API.build(self, method, url, headers, kwargs)
+        if self.account_id:
+            headers["AccountId"] = self.account_id
+        if self.key:
+            headers["ApiKey"] = self.key

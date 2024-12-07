@@ -29,6 +29,7 @@ from . import base
 from . import errors
 from . import mb
 
-from .base import BASE_URL, Scheduler, API, ShelveAPI
+from .base import BASE_URL, Scheduler, API, ShelveAPI, APIV2
 from .errors import APIError, SecurityError
 from .mb import MBAPI
+from .payment import PaymentAPI
