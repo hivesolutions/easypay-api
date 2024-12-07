@@ -6,6 +6,7 @@ API client for the Easypay service, conformant with the typical Python API clien
 
 - [Easypay API Docs](https://docs.easypay.pt/)
 - [Easypay Admin](https://id.easypay.pt/)
+- [Easypay Admin Test](https://id.test.easypay.pt/)
 
 ## Build Automation
 
