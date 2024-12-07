@@ -430,3 +430,25 @@ class ShelveAPI(API):
         finally:
             self.lock.release()
         return next
+
+
+class API2(appier.API):
+    """
+    Top level entry point for the Easypay API 2.0 services,
+    should provide the abstract implementations for the
+    services offered by Easypay using the 2.0 version of the API
+    """
+
+    def __init__(self, *args, **kwargs):
+        appier.API.__init__(self, *args, **kwargs)
+        self.production = appier.conf("EASYPAY_PRODUCTION", False, cast=bool)
+        self.account_id = appier.conf("EASYPAY_ACCOUNT_ID", None)
+        self.key = appier.conf("EASYPAY_KEY", None)
+        self.production = kwargs.get("production", self.production)
+        self.account_id = kwargs.get("account_id", self.account_id)
+        self.key = kwargs.get("key", self.key)
+        self.base_url = BASE_URL if self.production else BASE_URL_TEST
+        self.counter = 0
+        self.references = dict()
+        self.lock = threading.RLock()
+        self.scheduler = Scheduler(self)
