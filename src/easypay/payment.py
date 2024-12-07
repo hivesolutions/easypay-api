@@ -33,6 +33,10 @@ import appier
 
 class PaymentAPI(object):
 
-    def list_single_payments(self, *args, **kwargs):
+    def list_payments(self, *args, **kwargs):
         url = self.base_url + "single"
         return self.get(url, *args, **kwargs)
+
+    def create_payment(self, amount, method="mb"):
+        url = self.base_url + "single"
+        return self.post(url, data_j=dict(value=amount, method=method))
