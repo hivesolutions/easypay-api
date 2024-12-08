@@ -441,7 +441,7 @@ class ShelveAPI(API):
         return next
 
 
-class APIV2(appier.API, payment.PaymentAPI):
+class APIv2(appier.API, payment.PaymentAPI):
     """
     Top level entry point for the Easypay API 2.0 services,
     should provide the abstract implementations for the
