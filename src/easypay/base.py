@@ -58,7 +58,7 @@ BASE_URL_TEST = "http://test.easypay.pt/_s/"
 for testing purposes only and the password is sent using
 a non encrypted model (no protection provided) """
 
-BASE_URL_V2 = "https://api.easypay.pt/2.0/"
+BASE_URL_V2 = "https://api.prod.easypay.pt/2.0/"
 """ The base URL for API V2 for the production environment, this is the
 URL that should be used for production purposes """
 
