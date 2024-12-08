@@ -43,11 +43,15 @@ class MBAppV2(appier.APIApp):
     def payments(self):
         return self.api.list_payments()
 
-    @appier.route("/generate/create", "GET")
+    @appier.route("/payments/create", "GET")
     def create_payment(self):
         amount = self.field("amount", 10)
         method = self.field("method", "mb")
         return self.api.create_payment(amount=amount, method=method)
+
+    @appier.route("/payments/notify", "GET")
+    def notify_payment(self):
+        print("Payment notified")
 
 
 if __name__ == "__main__":
