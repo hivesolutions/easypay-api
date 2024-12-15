@@ -35,9 +35,9 @@ class PaymentAPI(object):
         url = self.base_url + "single"
         return self.get(url, *args, **kwargs)
 
-    def create_payment(self, amount, method="mb"):
+    def create_payment(self, amount, method="mb", key=None):
         url = self.base_url + "single"
-        return self.post(url, data_j=dict(value=amount, method=method))
+        return self.post(url, data_j=dict(value=amount, method=method, key=key))
 
     def get_payment(self, id):
         url = self.base_url + "single/%s" % id

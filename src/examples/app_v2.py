@@ -46,9 +46,10 @@ class MBAppV2(appier.APIApp):
 
     @appier.route("/payments/create", "GET")
     def create_payment(self):
-        amount = self.field("amount", 10)
+        amount = self.field("amount", 10, cast=float)
         method = self.field("method", "mb")
-        return self.api.create_payment(amount=amount, method=method)
+        key = self.field("key", None)
+        return self.api.create_payment(amount=amount, method=method, key=key)
 
     @appier.route("/payments/show/<str:id>", "GET")
     def show_payment(self, id):
