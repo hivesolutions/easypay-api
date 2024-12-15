@@ -47,7 +47,7 @@ class PaymentAPI(object):
         method["warning"] = warning
         method["cancel"] = cancel
         self.set_payment(method)
-        return result
+        return method
 
     def list_payments(self, *args, **kwargs):
         url = self.base_url + "single"
@@ -102,6 +102,7 @@ class PaymentAPI(object):
                 raise
             self.logger.warning("Problem while canceling payment, ignoring")
         self.delete_payment(id)
+        self.del_payment(id)
         self.trigger("canceled", payment)
 
     def mark_payment(self, id):
