@@ -28,9 +28,10 @@ __copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
-import base
-
+import pprint
 import appier
+
+import base
 
 
 class MBAppV2(appier.APIApp):
@@ -49,9 +50,21 @@ class MBAppV2(appier.APIApp):
         method = self.field("method", "mb")
         return self.api.create_payment(amount=amount, method=method)
 
-    @appier.route("/payments/notify", "GET")
+    @appier.route("/payments/show/<str:id>", "GET")
+    def show_payment(self, id):
+        return self.api.get_payment(id=id)
+
+    @appier.route("/payments/notify", "POST")
     def notify_payment(self):
-        print("Payment notified")
+        self.logger.debug("Received payment notification")
+        data = appier.request_json()
+        self.logger.debug("Payment notification data:\n%s" % pprint.pformat(data))
+
+    @appier.route("/generic/notify", "POST")
+    def notify_generic(self):
+        self.logger.debug("Received generic notification")
+        data = appier.request_json()
+        self.logger.debug("Payment generic data:\n%s" % pprint.pformat(data))
 
 
 if __name__ == "__main__":
