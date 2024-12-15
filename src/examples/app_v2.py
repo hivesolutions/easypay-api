@@ -55,6 +55,10 @@ class MBAppV2(appier.APIApp):
     def show_payment(self, id):
         return self.api.get_payment(id=id)
 
+    @appier.route("/payments/delete/<str:id>", "GET")
+    def delete_payment(self, id):
+        return self.api.delete_payment(id=id)
+
     @appier.route("/payments/notify", "POST")
     def notify_payment(self):
         data = appier.request_json()
