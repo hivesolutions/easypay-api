@@ -13,11 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Improved diagnostics support
+*
 
 ### Fixed
 
 *
+
+## [0.3.2] - 2024-12-15
+
+### Changed
+
+* Improved diagnostics support
 
 ## [0.3.1] - 2024-12-15
 
