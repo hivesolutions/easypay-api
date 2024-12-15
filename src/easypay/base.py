@@ -42,6 +42,7 @@ import appier
 
 from . import mb
 from . import errors
+from . import payment
 
 LOOP_TIMEOUT = 60.0
 """ The timeout to be used between tick intervals for
@@ -56,6 +57,14 @@ BASE_URL_TEST = "http://test.easypay.pt/_s/"
 """ The base URL for the sandbox endpoint, this is used
 for testing purposes only and the password is sent using
 a non encrypted model (no protection provided) """
+
+BASE_URL_V2 = "https://api.prod.easypay.pt/2.0/"
+""" The base URL for API V2 for the production environment, this is the
+URL that should be used for production purposes """
+
+BASE_URL_TEST_V2 = "https://api.test.easypay.pt/2.0/"
+""" The base URL for API V2 for the test environment, this is the URL
+that should be used for testing purposes """
 
 
 class Scheduler(threading.Thread):
@@ -430,3 +439,43 @@ class ShelveAPI(API):
         finally:
             self.lock.release()
         return next
+
+
+class APIv2(appier.API, payment.PaymentAPI):
+    """
+    Top level entry point for the Easypay API 2.0 services,
+    should provide the abstract implementations for the
+    services offered by Easypay using the 2.0 version of the API
+    """
+
+    def __init__(self, *args, **kwargs):
+        appier.API.__init__(self, *args, **kwargs)
+        self.production = appier.conf("EASYPAY_PRODUCTION", False, cast=bool)
+        self.account_id = appier.conf("EASYPAY_ACCOUNT_ID", None)
+        self.key = appier.conf("EASYPAY_KEY", None)
+        self.production = kwargs.get("production", self.production)
+        self.account_id = kwargs.get("account_id", self.account_id)
+        self.key = kwargs.get("key", self.key)
+        self.base_url = BASE_URL_V2 if self.production else BASE_URL_TEST_V2
+        self.counter = 0
+        self.references = dict()
+        self.lock = threading.RLock()
+        self.scheduler = Scheduler(self)
+
+    def build(
+        self,
+        method,
+        url,
+        data=None,
+        data_j=None,
+        data_m=None,
+        headers=None,
+        params=None,
+        mime=None,
+        kwargs=None,
+    ):
+        appier.API.build(self, method, url, headers, kwargs)
+        if self.account_id:
+            headers["AccountId"] = self.account_id
+        if self.key:
+            headers["ApiKey"] = self.key

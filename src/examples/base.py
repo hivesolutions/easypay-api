@@ -40,3 +40,10 @@ def get_api(api_class=easypay.ShelveAPI):
         cin=appier.conf("EASYPAY_CIN"),
         entity=appier.conf("EASYPAY_ENTITY"),
     )
+
+
+def get_api_v2(api_class=easypay.APIv2):
+    return api_class(
+        account_id=appier.conf("EASYPAY_ACCOUNT_ID"),
+        key=appier.conf("EASYPAY_KEY"),
+    )

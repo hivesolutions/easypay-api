@@ -29,4 +29,5 @@ from . import app
 from . import base
 
 from .app import MBApp
-from .base import get_api
+from .app_v2 import MBAppV2
+from .base import get_api, get_api_v2
