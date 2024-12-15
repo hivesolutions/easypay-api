@@ -40,6 +40,7 @@ class MBAppV2(appier.APIApp):
         appier.APIApp.__init__(self, name="mb_v2", *args, **kwargs)
         self.api = base.get_api_v2()
         self.api.bind("paid", self.on_paid)
+        self.api.bind("canceled", self.on_canceled)
 
     def start(self):
         appier.APIApp.start(self)
@@ -52,8 +53,17 @@ class MBAppV2(appier.APIApp):
     def on_paid(self, payment):
         identifier = payment["identifier"]
         amount = payment["amount"]
+        currency = payment["currency"]
         self.logger.info(
-            "Payment notification '%s' for amount %s" % (identifier, amount)
+            "Payment paid '%s' with amount %s %s" % (identifier, amount, currency)
+        )
+
+    def on_canceled(self, payment):
+        identifier = payment["identifier"]
+        amount = payment["amount"]
+        currency = payment["currency"]
+        self.logger.info(
+            "Payment canceled '%s' with amount %s %s" % (identifier, amount, currency)
         )
 
     @appier.route("/payments", "GET")
