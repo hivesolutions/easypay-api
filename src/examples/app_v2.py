@@ -39,6 +39,7 @@ class MBAppV2(appier.APIApp):
     def __init__(self, *args, **kwargs):
         appier.APIApp.__init__(self, name="mb_v2", *args, **kwargs)
         self.api = base.get_api_v2()
+        self.api.bind("paid", self.on_paid)
 
     def start(self):
         appier.APIApp.start(self)
@@ -47,6 +48,13 @@ class MBAppV2(appier.APIApp):
     def stop(self):
         appier.APIApp.stop(self)
         self.api.stop_scheduler()
+
+    def on_paid(self, payment):
+        identifier = payment["identifier"]
+        amount = payment["amount"]
+        self.logger.info(
+            "Payment notification '%s' for amount %s" % (identifier, amount)
+        )
 
     @appier.route("/payments", "GET")
     def payments(self):
@@ -57,7 +65,11 @@ class MBAppV2(appier.APIApp):
         amount = self.field("amount", 10, cast=float)
         method = self.field("method", "mb")
         key = self.field("key", None)
-        return self.api.create_payment(amount=amount, method=method, key=key)
+        warning = self.field("warning", None, cast=float)
+        cancel = self.field("cancel", None, cast=float)
+        return self.api.generate_payment(
+            amount=amount, method=method, key=key, warning=warning, cancel=cancel
+        )
 
     @appier.route("/payments/show/<str:id>", "GET")
     def show_payment(self, id):
@@ -76,6 +88,7 @@ class MBAppV2(appier.APIApp):
     def notify_generic(self):
         data = appier.request_json()
         self.logger.debug("Received generic notification:\n%s" % pprint.pformat(data))
+        self.api.notify_payment(data)
 
 
 if __name__ == "__main__":

@@ -74,9 +74,20 @@ class Scheduler(threading.Thread):
     then notify the final API client about the new information.
     """
 
-    def __init__(self, api):
+    def __init__(
+        self,
+        api,
+        loop_timeout=LOOP_TIMEOUT,
+        tick_docs=True,
+        tick_references=True,
+        tick_payments=True,
+    ):
         threading.Thread.__init__(self)
         self.api = api
+        self.loop_timeout = loop_timeout
+        self.tick_docs = tick_docs
+        self.tick_references = tick_references
+        self.tick_payments = tick_payments
         self.daemon = True
 
     def run(self):
@@ -90,12 +101,12 @@ class Scheduler(threading.Thread):
                 lines = traceback.format_exc().splitlines()
                 for line in lines:
                     self.api.logger.warning(line)
-            time.sleep(LOOP_TIMEOUT)
+            time.sleep(self.loop_timeout)
 
     def stop(self):
         self.running = False
 
-    def tick(self, ticks_docs=True, tick_references=True):
+    def tick(self):
         """
         Runs one tick operation, meaning that all the pending
         documents will be retrieved and a tentative will be made to
@@ -103,19 +114,14 @@ class Scheduler(threading.Thread):
 
         It's during this tick operation that the warning and cancel
         operations are performed on the references.
-
-        :type ticks_docs: bool
-        :param ticks_docs: If the documents should be handled in the
-        current tick operation.
-        :type tick_references: bool
-        :param tick_references: If the references should be handled
-        in the current tick operation.
         """
 
-        if ticks_docs:
+        if self.tick_docs:
             self._tick_docs()
-        if tick_references:
+        if self.tick_references:
             self._tick_references()
+        if self.tick_payments:
+            self._tick_payments()
 
     def _tick_docs(self):
         docs = self.api.list_docs()
@@ -157,6 +163,30 @@ class Scheduler(threading.Thread):
                 for line in lines:
                     self.api.logger.warning(line)
 
+    def _tick_payments(self):
+        payments = self.api.list_payments()
+        payments.sort(key=lambda v: v.get("cancel", 0) or 0, reverse=True)
+        for payment in payments:
+            try:
+                current = time.time()
+                identifier = payment["identifier"]
+                warning = payment.get("warning", None)
+                cancel = payment.get("cancel", None)
+                warned = payment.get("warned", False)
+                if warning and current > warning and not warned:
+                    self.api.warn_mb(identifier)
+                if cancel and current > cancel:
+                    self.api.cancel_mb(identifier)
+            except Exception as exception:
+                self.api.logger.critical(
+                    "Problem handling payment: '%s'"
+                    % payment.get("identifier", "unknown")
+                )
+                self.api.logger.error(exception)
+                lines = traceback.format_exc().splitlines()
+                for line in lines:
+                    self.api.logger.warning(line)
+
 
 class API(appier.API, mb.MBAPI):
     """
@@ -185,7 +215,9 @@ class API(appier.API, mb.MBAPI):
         self.references = dict()
         self.docs = dict()
         self.lock = threading.RLock()
-        self.scheduler = Scheduler(self)
+        self.scheduler = Scheduler(
+            self, tick_docs=True, tick_references=True, tick_payments=False
+        )
 
     @classmethod
     def cleanup(cls, *args, **kwargs):
@@ -474,10 +506,11 @@ class APIv2(appier.API, payment.PaymentAPI):
         self.account_id = kwargs.get("account_id", self.account_id)
         self.key = kwargs.get("key", self.key)
         self.base_url = BASE_URL_V2 if self.production else BASE_URL_TEST_V2
-        self.counter = 0
-        self.references = dict()
+        self.payments = dict()
         self.lock = threading.RLock()
-        self.scheduler = Scheduler(self)
+        self.scheduler = Scheduler(
+            self, tick_docs=False, tick_references=False, tick_payments=True
+        )
 
     @classmethod
     def cleanup(cls, *args, **kwargs):
@@ -515,3 +548,72 @@ class APIv2(appier.API, payment.PaymentAPI):
             headers["AccountId"] = self.account_id
         if self.key:
             headers["ApiKey"] = self.key
+
+    def list_references(self):
+        references = self.references.values()
+        return appier.legacy.eager(references)
+
+
+class ShelveAPIv2(APIv2):
+    """
+    Shelve API 2.0 based infra-structure, that provides a storage
+    engine based for secondary storage persistence. This class
+    should be used only as a fallback storage as the performance
+    is considered poor, due to large overhead in persistence.
+    """
+
+    def __init__(self, *args, **kwargs):
+        APIv2.__init__(self, *args, **kwargs)
+        self.path = appier.conf("EASYPAY_PATH", "easypay.shelve")
+        self.path = kwargs.get("path", self.path)
+        base_path = os.path.dirname(self.path)
+        exists = not base_path or os.path.exists(base_path)
+        if not exists:
+            os.makedirs(base_path)
+        self.shelve = shelve.open(self.path, protocol=2, writeback=True)
+
+    def destroy(self):
+        APIv2.destroy(self)
+        if self.shelve:
+            self.shelve.close()
+        self.shelve = None
+
+    def set_payment(self, payment):
+        identifier = payment["identifier"]
+        self.lock.acquire()
+        try:
+            payments = self.shelve.get("payments", {})
+            payments[identifier] = payment
+            self.shelve["payments"] = payments
+            self.shelve.sync()
+        finally:
+            self.lock.release()
+
+    def del_payment(self, identifier):
+        self.lock.acquire()
+        try:
+            payments = self.shelve.get("payments", {})
+            del payments[identifier]
+            self.shelve["payments"] = payments
+            self.shelve.sync()
+        finally:
+            self.lock.release()
+
+    def list_payments(self):
+        self.lock.acquire()
+        try:
+            payments = self.shelve.get("payments", {})
+            payments = payments.values()
+            payments = appier.legacy.eager(payments)
+        finally:
+            self.lock.release()
+        return payments
+
+    def get_payment(self, identifier):
+        self.lock.acquire()
+        try:
+            payments = self.shelve.get("payments", {})
+            payment = payments.get(identifier, None)
+        finally:
+            self.lock.release()
+        return payment

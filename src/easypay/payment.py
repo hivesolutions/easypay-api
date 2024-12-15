@@ -28,8 +28,24 @@ __copyright__ = "Copyright (c) 2008-2024 Hive Solutions Lda."
 __license__ = "Apache License, Version 2.0"
 """ The license for the module """
 
+import appier
+
 
 class PaymentAPI(object):
+
+    def generate_payment(
+        self, amount, method="mb", currency="EUR", key=None, warning=None, cancel=None
+    ):
+        result = self.create_payment(amount, method=method, currency=currency, key=key)
+        status = result.get("status", "error")
+        if not status == "ok":
+            raise appier.OperationalError("Problem creating payment")
+        method = dict(result["method"])
+        method["identifier"] = result["id"]
+        method["warning"] = warning
+        method["cancel"] = cancel
+        self.set_payment(method)
+        return result
 
     def list_payments(self, *args, **kwargs):
         url = self.base_url + "single"
@@ -57,3 +73,46 @@ class PaymentAPI(object):
     def delete_payment(self, id):
         url = self.base_url + "single/%s" % id
         return self.delete(url)
+
+    def warn_payment(self, id):
+        self.logger.debug("Warning Payment (id := %s)" % id)
+        payment = self.get_payment(id)
+        if not payment:
+            self.logger.warning("No payment found for identifier to warn")
+            return
+        warned = payment.get("warned", False)
+        if warned:
+            return
+        payment["warned"] = True
+        self.set_reference(payment)
+        self.trigger("warned", payment)
+
+    def cancel_mb(self, id, force=True):
+        self.logger.debug("Canceling Payment (id := %s)" % id)
+        payment = self.get_payment(id)
+        if not payment:
+            self.logger.warning("No payment found for identifier to cancel")
+            return
+        try:
+            self.cancel_payment(id)
+        except Exception:
+            if not force:
+                raise
+            self.logger.warning("Problem while canceling payment, ignoring")
+        self.delete_payment(id)
+        self.trigger("canceled", payment)
+
+    def mark_payment(self, id):
+        self.logger.debug("Marking payment (id := %s)" % id)
+        payment = self.get_payment(id)
+        if not payment:
+            self.logger.warning("No payment found for identifier to mark")
+            return
+        self.trigger("paid", payment)
+        self.trigger("marked", payment)
+        self.del_payment(id)
+
+    def notify_payment(self, data):
+        type, status = data["type"], data["status"]
+        if type == "capture" and status == "success":
+            self.mark_payment(data["id"])
