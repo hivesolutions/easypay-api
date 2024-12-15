@@ -35,10 +35,25 @@ class PaymentAPI(object):
         url = self.base_url + "single"
         return self.get(url, *args, **kwargs)
 
-    def create_payment(self, amount, method="mb", key=None):
+    def create_payment(self, amount, method="mb", currency="EUR", key=None):
         url = self.base_url + "single"
-        return self.post(url, data_j=dict(value=amount, method=method, key=key))
+        return self.post(
+            url, data_j=dict(value=amount, method=method, currency=currency, key=key)
+        )
 
     def get_payment(self, id):
         url = self.base_url + "single/%s" % id
         return self.get(url)
+
+    def update_payment(self, currency=None, key=None):
+        url = self.base_url + "single/%s" % id
+        data_j = dict()
+        if not currency == None:
+            data_j["currency"] = currency
+        if not key == None:
+            data_j["key"] = key
+        return self.post(url, data_j=data_j)
+
+    def delete_payment(self, id):
+        url = self.base_url + "single/%s" % id
+        return self.delete(url)
