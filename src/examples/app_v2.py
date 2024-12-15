@@ -56,15 +56,13 @@ class MBAppV2(appier.APIApp):
 
     @appier.route("/payments/notify", "POST")
     def notify_payment(self):
-        self.logger.debug("Received payment notification")
         data = appier.request_json()
-        self.logger.debug("Payment notification data:\n%s" % pprint.pformat(data))
+        self.logger.debug("Received payment notification:\n%s" % pprint.pformat(data))
 
     @appier.route("/generic/notify", "POST")
     def notify_generic(self):
-        self.logger.debug("Received generic notification")
         data = appier.request_json()
-        self.logger.debug("Payment generic data:\n%s" % pprint.pformat(data))
+        self.logger.debug("Received generic notification:\n%s" % pprint.pformat(data))
 
 
 if __name__ == "__main__":
