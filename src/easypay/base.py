@@ -549,9 +549,12 @@ class APIv2(appier.API, payment.PaymentAPI):
         if self.key:
             headers["ApiKey"] = self.key
 
-    def list_references(self):
-        references = self.references.values()
-        return appier.legacy.eager(references)
+    def diagnostics(self):
+        return dict(payments=self.list_payments())
+
+    def list_payments(self):
+        payments = self.payments.values()
+        return appier.legacy.eager(payments)
 
 
 class ShelveAPIv2(APIv2):
