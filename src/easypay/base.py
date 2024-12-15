@@ -95,13 +95,29 @@ class Scheduler(threading.Thread):
     def stop(self):
         self.running = False
 
-    def tick(self):
+    def tick(self, ticks_docs=True, tick_references=True):
         """
         Runs one tick operation, meaning that all the pending
-        documents will be retrieved and a try will be made to
+        documents will be retrieved and a tentative will be made to
         retrieve the detailed information on them.
+
+        It's during this tick operation that the warning and cancel
+        operations are performed on the references.
+
+        :type ticks_docs: bool
+        :param ticks_docs: If the documents should be handled in the
+        current tick operation.
+        :type tick_references: bool
+        :param tick_references: If the references should be handled
+        in the current tick operation.
         """
 
+        if ticks_docs:
+            self._tick_docs()
+        if tick_references:
+            self._tick_references()
+
+    def _tick_docs(self):
         docs = self.api.list_docs()
         for doc in docs:
             try:
@@ -117,6 +133,7 @@ class Scheduler(threading.Thread):
                 for line in lines:
                     self.api.logger.warning(line)
 
+    def _tick_references(self):
         references = self.api.list_references()
         references.sort(key=lambda v: v.get("cancel", 0) or 0, reverse=True)
         for reference in references:
