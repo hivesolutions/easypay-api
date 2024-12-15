@@ -13,11 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Added support for delete and update payment
+*
 
 ### Fixed
 
 *
+
+## [0.3.1] - 2024-12-15
+
+### Changed
+
+* Added support for delete and update payment
+* Support for Shelve API v2
 
 ## [0.3.0] - 2024-12-15
 
