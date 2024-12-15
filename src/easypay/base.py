@@ -479,6 +479,25 @@ class APIv2(appier.API, payment.PaymentAPI):
         self.lock = threading.RLock()
         self.scheduler = Scheduler(self)
 
+    @classmethod
+    def cleanup(cls, *args, **kwargs):
+        singleton = cls.singleton(*args, **kwargs)
+        singleton.destroy()
+
+    def destroy(self):
+        appier.API.destroy(self)
+        self.stop_scheduler()
+
+    def start_scheduler(self):
+        if self.scheduler.is_alive():
+            return
+        self.scheduler.start()
+
+    def stop_scheduler(self):
+        if not self.scheduler.is_alive():
+            return
+        self.scheduler.stop()
+
     def build(
         self,
         method,

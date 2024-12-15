@@ -40,6 +40,14 @@ class MBAppV2(appier.APIApp):
         appier.APIApp.__init__(self, name="mb_v2", *args, **kwargs)
         self.api = base.get_api_v2()
 
+    def start(self):
+        appier.APIApp.start(self)
+        self.api.start_scheduler()
+
+    def stop(self):
+        appier.APIApp.stop(self)
+        self.api.stop_scheduler()
+
     @appier.route("/payments", "GET")
     def payments(self):
         return self.api.list_payments()
