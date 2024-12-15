@@ -17,6 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+*
+
+## [0.3.3] - 2024-12-15
+
+### Fixed
+
 * Issue related to canceling of payment
 
 ## [0.3.2] - 2024-12-15
