@@ -567,7 +567,8 @@ class ShelveAPIv2(APIv2):
 
     def __init__(self, *args, **kwargs):
         APIv2.__init__(self, *args, **kwargs)
-        self.path = appier.conf("EASYPAY_PATH", "easypay.shelve")
+        self.path = appier.conf("EASYPAY_PATH", "easypay_v2.shelve")
+        self.path = appier.conf("EASYPAY_V2_PATH", self.path)
         self.path = kwargs.get("path", self.path)
         base_path = os.path.dirname(self.path)
         exists = not base_path or os.path.exists(base_path)
