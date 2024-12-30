@@ -42,6 +42,7 @@ class PaymentAPI(object):
             raise appier.OperationalError("Problem creating payment")
         method = dict(result["method"])
         method["identifier"] = result["id"]
+        method["key"] = key
         method["amount"] = amount
         method["currency"] = currency
         method["warning"] = warning

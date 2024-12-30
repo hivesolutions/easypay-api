@@ -93,3 +93,32 @@ class BaseTest(unittest.TestCase):
         doc = api.get_doc("doc")
 
         self.assertEqual(doc, None)
+
+    def test_shelve_v2(self):
+        api = easypay.ShelveAPIv2(account_id="account_id", account_key="account_key")
+
+        data = dict(
+            method="mb",
+            identifier="identifier",
+            key="key",
+            amount="10.00",
+            currency="EUR",
+            warning=True,
+            cancel=True,
+        )
+
+        api.set_payment(data)
+
+        payment = api.get_payment("identifier")
+
+        self.assertEqual(payment["identifier"], "identifier")
+        self.assertEqual(payment["key"], "key")
+        self.assertEqual(payment["amount"], "10.00")
+        self.assertEqual(payment["currency"], "EUR")
+        self.assertEqual(payment["warning"], True)
+        self.assertEqual(payment["cancel"], True)
+
+        api.del_payment("identifier")
+        payment = api.get_payment("identifier")
+
+        self.assertEqual(payment, None)
