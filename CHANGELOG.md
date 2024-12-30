@@ -13,11 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Key value stored for V2 API
+*
 
 ### Fixed
 
 *
+
+## [0.3.4] - 2024-12-30
+
+### Changed
+
+* Key value stored for V2 API
 
 ## [0.3.3] - 2024-12-15
 
