@@ -1,6 +1,6 @@
 # [Easypay API](http://easypay-api.hive.pt)
 
-API client for the Easypay service, conformant with the typical Python API client provided by Hive Solutions.
+API client for the [Easypay](https://www.easypay.pt) service, conformant with the typical Python API client provided by Hive Solutions.
 
 ## Resources
 
