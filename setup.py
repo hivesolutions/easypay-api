@@ -33,7 +33,7 @@ import setuptools
 
 setuptools.setup(
     name="easypay-api",
-    version="0.3.4",
+    version="0.3.5",
     author="Hive Solutions Lda.",
     author_email="development@hive.pt",
     description="Easypay API Client",
