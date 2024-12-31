@@ -174,9 +174,9 @@ class Scheduler(threading.Thread):
                 cancel = payment.get("cancel", None)
                 warned = payment.get("warned", False)
                 if warning and current > warning and not warned:
-                    self.api.warn_mb(identifier)
+                    self.api.warn_payment(identifier)
                 if cancel and current > cancel:
-                    self.api.cancel_mb(identifier)
+                    self.api.cancel_payment(identifier)
             except Exception as exception:
                 self.api.logger.critical(
                     "Problem handling payment: '%s'"
