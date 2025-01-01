@@ -34,7 +34,14 @@ import appier
 class PaymentAPI(object):
 
     def generate_payment(
-        self, amount, method="mb", currency="EUR", key=None, warning=None, cancel=None
+        self,
+        amount,
+        method="mb",
+        currency="EUR",
+        key=None,
+        customer=None,
+        warning=None,
+        cancel=None,
     ):
         result = self.create_payment(amount, method=method, currency=currency, key=key)
         status = result.get("status", "error")
@@ -47,6 +54,8 @@ class PaymentAPI(object):
         method["currency"] = currency
         method["warning"] = warning
         method["cancel"] = cancel
+        if not customer == None:
+            method["customer"] = customer
         self.set_payment(method)
         return method
 

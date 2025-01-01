@@ -75,10 +75,17 @@ class MBAppV2(appier.APIApp):
         amount = self.field("amount", 10, cast=float)
         method = self.field("method", "mb")
         key = self.field("key", None)
+        phone = self.field("phone", None)
         warning = self.field("warning", None, cast=float)
         cancel = self.field("cancel", None, cast=float)
+        customer = dict(phone=phone) if phone else None
         return self.api.generate_payment(
-            amount=amount, method=method, key=key, warning=warning, cancel=cancel
+            amount=amount,
+            method=method,
+            key=key,
+            customer=customer,
+            warning=warning,
+            cancel=cancel,
         )
 
     @appier.route("/payments/show/<str:id>", "GET")
