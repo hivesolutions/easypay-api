@@ -43,7 +43,9 @@ class PaymentAPI(object):
         warning=None,
         cancel=None,
     ):
-        result = self.create_payment(amount, method=method, currency=currency, key=key)
+        result = self.create_payment(
+            amount, method=method, currency=currency, key=key, customer=customer
+        )
         status = result.get("status", "error")
         if not status == "ok":
             raise appier.OperationalError("Problem creating payment")
@@ -63,11 +65,14 @@ class PaymentAPI(object):
         url = self.base_url + "single"
         return self.get(url, *args, **kwargs)
 
-    def create_payment(self, amount, method="mb", currency="EUR", key=None):
+    def create_payment(
+        self, amount, method="mb", currency="EUR", key=None, customer=None
+    ):
         url = self.base_url + "single"
-        return self.post(
-            url, data_j=dict(value=amount, method=method, currency=currency, key=key)
-        )
+        data_j = dict(value=amount, method=method, currency=currency, key=key)
+        if not customer == None:
+            data_j["customer"] = customer
+        return self.post(url, data_j=data_j)
 
     def get_payment(self, id):
         url = self.base_url + "single/%s" % id
