@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-*
+* Support for MBWay payments - [#2](https://github.com/hivesolutions/easypay-api/issues/2)
 
 ### Changed
 
