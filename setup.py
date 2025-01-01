@@ -44,6 +44,7 @@ setuptools.setup(
     packages=["easypay", "easypay.test"],
     test_suite="easypay.test",
     package_dir={"": os.path.normpath("src")},
+    package_data={"easypay": ["*.pyi"]},
     install_requires=["appier"],
     classifiers=[
         "Development Status :: 3 - Alpha",

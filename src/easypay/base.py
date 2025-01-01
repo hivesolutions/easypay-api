@@ -552,9 +552,22 @@ class APIv2(appier.API, payment.PaymentAPI):
     def diagnostics(self):
         return dict(payments=self.list_payments())
 
+    def new_payment(self, payment):
+        self.set_payment(payment)
+
+    def set_payment(self, payment):
+        identifier = payment["identifier"]
+        self.payments[identifier] = payment
+
+    def del_payment(self, identifier):
+        del self.payments[identifier]
+
     def list_payments(self):
         payments = self.payments.values()
         return appier.legacy.eager(payments)
+
+    def get_payment(self, identifier):
+        return self.payments.get(identifier, None)
 
 
 class ShelveAPIv2(APIv2):
