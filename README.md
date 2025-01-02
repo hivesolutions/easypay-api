@@ -19,11 +19,9 @@ Here’s a simple example of how to use the Easypay API client:
 ```python
 import easypay
 
-client = easypay.Api(api_key="your_api_key")
-payment = client.generate_payment(
-    100,
-    method="mb"
-)
+client = easypay.Api(account_id="your_account_id", key="your_key")
+payment = client.generate_payment(100, method="mb")
+
 print(payment)
 ```
 
