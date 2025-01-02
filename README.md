@@ -2,7 +2,7 @@
 
 API client for the [Easypay](https://www.easypay.pt) service, conformant with the typical Python API client provided by Hive Solutions.
 
-The Easypay API client provides a simple and convenient way to interact with the Easypay payment gateway. This client allows developers to integrate payment processing, manage transactions, and perform other operations using Easypay services in their Python applications.
+The Easypay API client provides a simple and convenient way to interact with the [Easypay](https://www.easypay.pt) payment gateway. This client allows developers to integrate payment processing, manage transactions, and perform other operations using Easypay services in their Python applications.
 
 ## Installation
 
@@ -25,15 +25,15 @@ payment = client.generate_payment(100, method="mb")
 print(payment)
 ```
 
-## Support
-
-For more information, visit the [Easypay API Documentation](https://docs.easypay.pt/) or contact Easypay support.
-
 ## Resources
 
 - [Easypay API Docs](https://docs.easypay.pt/)
 - [Easypay Admin](https://id.easypay.pt/)
 - [Easypay Admin Test](https://id.test.easypay.pt/)
+
+## Support
+
+For more information, visit the [Easypay API Documentation](https://docs.easypay.pt/) or contact Easypay support.
 
 ## License
 
