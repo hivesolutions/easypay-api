@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Mapping, Sequence, TypedDict
+from typing import Any, Dict, List, NotRequired, Optional, Mapping, Sequence, TypedDict
 from threading import Thread
 from appier import API
 from xml.dom.minidom import Node
@@ -33,8 +33,9 @@ class Payment(TypedDict):
     amount: float
     currency: str
     method: str
+    type: NotRequired[str | None]
     key: str
-    customer: Dict[str, Any]
+    customer: NotRequired[Dict[str, Any]]
     warning: float | None
     cancel: float | None
     status: str

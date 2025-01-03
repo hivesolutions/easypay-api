@@ -74,6 +74,7 @@ class MBAppV2(appier.APIApp):
     def create_payment(self):
         amount = self.field("amount", 10, cast=float)
         method = self.field("method", "mb")
+        type = self.field("type", None)
         key = self.field("key", None)
         phone = self.field("phone", None)
         warning = self.field("warning", None, cast=float)
@@ -82,6 +83,7 @@ class MBAppV2(appier.APIApp):
         return self.api.generate_payment(
             amount=amount,
             method=method,
+            type=type,
             key=key,
             customer=customer,
             warning=warning,
