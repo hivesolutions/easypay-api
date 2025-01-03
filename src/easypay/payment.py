@@ -40,6 +40,7 @@ class PaymentAPI(object):
         type=None,
         currency="EUR",
         key=None,
+        capture=None,
         customer=None,
         warning=None,
         cancel=None,
@@ -50,6 +51,7 @@ class PaymentAPI(object):
             type=type,
             currency=currency,
             key=key,
+            capture=capture,
             customer=customer,
         )
         status = result.get("status", "error")
@@ -62,6 +64,10 @@ class PaymentAPI(object):
         method["currency"] = currency
         method["warning"] = warning
         method["cancel"] = cancel
+        if not capture == None:
+            method["capture"] = type
+        if not type == None:
+            method["type"] = type
         if not customer == None:
             method["customer"] = customer
         self.set_payment(method)
@@ -72,12 +78,21 @@ class PaymentAPI(object):
         return self.get(url, *args, **kwargs)
 
     def create_payment(
-        self, amount, method="mb", type=None, currency="EUR", key=None, customer=None
+        self,
+        amount,
+        method="mb",
+        type=None,
+        currency="EUR",
+        key=None,
+        capture=None,
+        customer=None,
     ):
         url = self.base_url + "single"
         data_j = dict(value=amount, method=method, currency=currency, key=key)
         if not type == None:
             data_j["type"] = type
+        if not capture == None:
+            data_j["capture"] = capture
         if not customer == None:
             data_j["customer"] = customer
         return self.post(url, data_j=data_j)

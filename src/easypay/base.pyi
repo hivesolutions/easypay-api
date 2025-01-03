@@ -35,6 +35,7 @@ class Payment(TypedDict):
     method: str
     type: NotRequired[str | None]
     key: str
+    capture: NotRequired[Dict[str, Any]]
     customer: NotRequired[Dict[str, Any]]
     warning: float | None
     cancel: float | None
