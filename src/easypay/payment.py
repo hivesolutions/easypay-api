@@ -135,10 +135,12 @@ class PaymentAPI(object):
             return
         try:
             self.cancel_payment(id)
-        except Exception:
+        except Exception as exception:
             if not force:
                 raise
-            self.logger.warning("Problem while canceling payment, ignoring")
+            self.logger.warning(
+                "Problem while canceling payment (%s), ignoring" % str(exception)
+            )
         self.delete_payment(id)
         self.del_payment(id)
         self.trigger("canceled", payment)

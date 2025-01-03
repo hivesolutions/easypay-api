@@ -86,10 +86,12 @@ class MBAPI(object):
         url = self.base_url + "api_easypay_00BG.php"
         try:
             self.get(url, ep_entity=self.entity, ep_ref=ref, ep_delete="yes")
-        except Exception:
+        except Exception as exception:
             if not force:
                 raise
-            self.logger.warning("Problem while canceling multibanco, ignoring")
+            self.logger.warning(
+                "Problem while canceling multibanco (%s), ignoring" % str(exception)
+            )
         self.del_reference(key)
         self.trigger("canceled", reference)
 
