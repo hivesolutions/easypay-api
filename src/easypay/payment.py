@@ -104,7 +104,7 @@ class PaymentAPI(object):
         self.set_reference(payment)
         self.trigger("warned", payment)
 
-    def cancel_mb(self, id, force=True):
+    def cancel_payment(self, id, force=True):
         self.logger.debug("Canceling Payment (id := %s)" % id)
         payment = self.get_payment(id)
         if not payment:
