@@ -134,14 +134,13 @@ class PaymentAPI(object):
             self.logger.warning("No payment found for identifier to cancel")
             return
         try:
-            self.cancel_payment(id)
+            self.delete_payment(id)
         except Exception as exception:
             if not force:
                 raise
             self.logger.warning(
                 "Problem while canceling payment (%s), ignoring" % str(exception)
             )
-        self.delete_payment(id)
         self.del_payment(id)
         self.trigger("canceled", payment)
 

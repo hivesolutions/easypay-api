@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *
 
+## [0.3.11] - 2025-01-03
+
+### Fixed
+
+* Major cancel operation issue
+
 ## [0.3.10] - 2025-01-03
 
 ### Changed
