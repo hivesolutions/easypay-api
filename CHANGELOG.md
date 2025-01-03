@@ -9,8 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Support for MBWay payments - [#2](https://github.com/hivesolutions/easypay-api/issues/2)
-* Minimal type support using .pyi files
+*
 
 ### Changed
 
@@ -19,6 +18,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 *
+
+## [0.3.6] - 2024-12-31
+
+### Added
+
+* Support for MBWay payments - [#2](https://github.com/hivesolutions/easypay-api/issues/2)
+* Minimal type support using .pyi files
 
 ## [0.3.5] - 2024-12-31
 
